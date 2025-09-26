@@ -3,8 +3,6 @@ qt6-base
 qt6-declarative
 qt6-wayland
 alacritty
-swww
-pywal
 wl-clipboard
 grim
 slurp
