@@ -71,10 +71,12 @@ stow_dotfiles() {
 
     echo "   Stowing modules: $STOW_MODULES"
     pushd "$PROJECT_ROOT/modules" > /dev/null
-    # Stow each module into the ~/.config directory
+    # Stow each module into its own subdirectory within ~/.config
     for module in $STOW_MODULES; do
         echo "   - Stowing $module..."
-        stow -v --target="$HOME/.config" "$module"
+        # The target is now $HOME/.config/<module_name>
+        # This ensures files from 'hypr' go into '.config/hypr', etc.
+        stow -v --restow --target="$HOME/.config/$module" "$module"
     done
     popd > /dev/null
 
