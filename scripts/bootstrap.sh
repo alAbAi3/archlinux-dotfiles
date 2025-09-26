@@ -60,6 +60,17 @@ install_aur_packages() {
     fi
 }
 
+remove_conflicting_files() {
+    echo "-> Checking for and removing conflicting default config files..."
+    CONFLICTING_FILE="$HOME/.config/hypr/hyprland.conf"
+    if [ -f "$CONFLICTING_FILE" ] && [ ! -L "$CONFLICTING_FILE" ]; then
+        echo "  - Deleting conflicting file: $CONFLICTING_FILE"
+        rm "$CONFLICTING_FILE"
+    else
+        echo "  - No conflicts found."
+    fi
+}
+
 stow_dotfiles() {
     echo "-> Symlinking dotfiles using stow..."
     if ! command -v stow &> /dev/null; then
@@ -90,6 +101,7 @@ main() {
     install_pacman_packages
     install_nvidia_packages_if_needed
     install_aur_packages
+    remove_conflicting_files
     stow_dotfiles
     echo "✅ Bootstrap complete."
 }
