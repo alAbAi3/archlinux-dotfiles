@@ -1,0 +1,14 @@
+# Base packages for MVP
+hyprland
+qt6-base
+qt6-declarative
+qt6-wayland
+# Assuming quickshell is available, if not, it needs to be built
+# quickshell
+alacritty # A good default terminal
+swww # For wallpaper
+pywal # For theming later
+wl-clipboard
+grim
+slurp
+stow # For managing dotfiles
