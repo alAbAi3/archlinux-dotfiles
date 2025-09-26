@@ -85,15 +85,10 @@ stow_dotfiles() {
 # --- Main Execution ---
 main() {
     echo "🚀 Bootstrapping Rice Environment..."
-    # install_pacman_packages
-    # install_aur_packages
-    # stow_dotfiles
-    echo "✅ Bootstrap skeleton complete. Uncomment functions in main() to run."
-    echo "Next steps:"
-    echo "1. Review package lists in 'packages/'"
-    echo "2. Review stow modules in the STOW_MODULES variable."
-    echo "3. Make this script executable: chmod +x scripts/bootstrap.sh"
-    echo "4. Run this script again after uncommenting the functions."
+    install_pacman_packages
+    install_aur_packages
+    stow_dotfiles
+    echo "✅ Bootstrap complete."
 }
 
 main "$@"
