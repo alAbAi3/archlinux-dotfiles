@@ -74,6 +74,8 @@ stow_dotfiles() {
     # Stow each module into its own subdirectory within ~/.config
     for module in $STOW_MODULES; do
         echo "   - Stowing $module..."
+        # Ensure the target directory exists before stowing
+        mkdir -p "$HOME/.config/$module"
         # The target is now $HOME/.config/<module_name>
         # This ensures files from 'hypr' go into '.config/hypr', etc.
         stow -v --restow --target="$HOME/.config/$module" "$module"
