@@ -5,6 +5,7 @@
 # This script will:
 # 1. Install necessary packages from official repos and AUR.
 # 2. Symlink dotfiles into the correct locations using `stow`.
+# 3. Install NVIDIA drivers if an NVIDIA GPU is detected.
 #
 
 set -e # Exit immediately if a command exits with a non-zero status.
@@ -20,6 +21,9 @@ PACMAN_PACKAGES_FILE="$PROJECT_ROOT/packages/packages-base.txt"
 AUR_PACKAGES_FILE="$PROJECT_ROOT/packages/packages-aur.txt"
 # Stow modules to link
 STOW_MODULES="hypr quickshell"
+# NVIDIA packages
+NVIDIA_PACKAGES="linux-headers nvidia-dkms qt5-wayland qt6-wayland egl-wayland"
+
 
 # --- Functions ---
 install_pacman_packages() {
@@ -28,6 +32,16 @@ install_pacman_packages() {
         sudo pacman -S --noconfirm --needed - < "$PACMAN_PACKAGES_FILE"
     else
         echo "  - WARN: $PACMAN_PACKAGES_FILE not found. Skipping."
+    fi
+}
+
+install_nvidia_packages_if_needed() {
+    # Check for NVIDIA GPU
+    if lspci | grep -E "VGA|3D controller" | grep -iq nvidia; then
+        echo "-> NVIDIA GPU detected. Installing NVIDIA packages..."
+        sudo pacman -S --noconfirm --needed $NVIDIA_PACKAGES
+    else
+        echo "-> No NVIDIA GPU detected. Skipping NVIDIA package installation."
     fi
 }
 
@@ -53,22 +67,6 @@ stow_dotfiles() {
         return 1
     fi
 
-    # The -t flag sets the target directory
-    # We stow from the 'modules' directory into the user's home directory
-    # The target for hyprland is ~/.config/hypr, for quickshell it's ~/.config/quickshell
-    # Stow needs the directory structure inside modules to match the target structure relative to ~
-    # e.g. modules/hypr/.config/hypr/hyprland.conf -> ~/.config/hypr/hyprland.conf
-    # Let's adjust the structure or the stow command.
-    # A better approach is to have modules/hypr/.config/hypr and then stow from modules.
-    # For now, let's assume the user will create the correct structure or we use a more complex stow command.
-    # Let's stick to the simple stow command and assume the structure is modules/hypr/.config/hypr etc.
-    # The user's plan implies `stow` from `modules/*` into `~/.config`.
-    # This means the structure should be `modules/hypr/hyprland.conf` and it will link to `~/.config/hypr/hyprland.conf` if we are in `~/.config` and run `stow ../modules/hypr`
-    # The user's layout is `modules/hypr/`. Let's assume stow is run from the project root.
-    # `stow -d modules -t ~/.config hypr quickshell` would require `modules/hypr` to contain `.config/hypr` which is not what the user specified.
-    # The simplest interpretation is that the `hypr` folder itself should be linked into `~/.config`.
-    # `stow --target=$HOME/.config -d modules hypr quickshell`
-
     echo "   Stowing modules: $STOW_MODULES"
     pushd "$PROJECT_ROOT/modules" > /dev/null
     # Stow each module into its own subdirectory within ~/.config
@@ -90,6 +88,7 @@ stow_dotfiles() {
 main() {
     echo "🚀 Bootstrapping Rice Environment..."
     install_pacman_packages
+    install_nvidia_packages_if_needed
     install_aur_packages
     stow_dotfiles
     echo "✅ Bootstrap complete."
