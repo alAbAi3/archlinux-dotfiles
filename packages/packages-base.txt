@@ -6,4 +6,4 @@ alacritty
 wl-clipboard
 grim
 slurp
-stow
+stow"swww" 

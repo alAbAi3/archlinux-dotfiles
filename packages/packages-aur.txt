@@ -1,3 +1,1 @@
-quickshell
-python-pywal16
-swww
+quickshell-git
