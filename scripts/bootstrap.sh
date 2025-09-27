@@ -54,6 +54,8 @@ install_aur_packages() {
     fi
 
     if [ -f "$AUR_PACKAGES_FILE" ]; then
+        echo "  - Removing potentially conflicting 'quickshell' package..."
+        sudo pacman -R --noconfirm quickshell >/dev/null 2>&1 || true
         yay -S --noconfirm --needed - < "$AUR_PACKAGES_FILE"
     else
         echo "  - INFO: $AUR_PACKAGES_FILE not found. Skipping."
