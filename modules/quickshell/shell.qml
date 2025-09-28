@@ -1,14 +1,15 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Window 2.15 // Import for Screen
 
-// Phase 1 (revised v2): Corrected Layout
-// - The root item is now a screen-filling container.
-// - The Panel and Launcher are separate sibling items.
-// This fixes the bug where the launcher was incorrectly appearing inside the panel.
+// Phase 1 (revised v3): Corrected Layout with Explicit Size
+// - The root item now has an explicit size matching the screen.
+// This fixes the layout collapse from the previous version.
 
 Item {
     id: shellRoot
-    // This assumes the QML view itself is anchored to the screen edges.
+    width: Screen.width
+    height: Screen.height
 
     // --- Panel ---
     Rectangle {
@@ -18,9 +19,8 @@ Item {
         anchors.top: parent.top
         color: "#282A36"
 
-        // --- Timer for the Clock ---
         Timer {
-            interval: 1000 // Update every second
+            interval: 1000
             running: true
             repeat: true
             onTriggered: {
@@ -28,13 +28,11 @@ Item {
             }
         }
 
-        // --- Main Panel UI ---
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 10
             anchors.rightMargin: 10
 
-            // --- Launcher Button ---
             Rectangle {
                 width: 100
                 height: 30
@@ -53,13 +51,11 @@ Item {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        // This can now correctly toggle its sibling overlay
                         launcherOverlay.visible = !launcherOverlay.visible
                     }
                 }
             }
 
-            // --- Workspace Buttons ---
             RowLayout {
                 id: workspaceList
                 spacing: 5
@@ -89,7 +85,6 @@ Item {
                 Layout.fillWidth: true
             }
 
-            // --- Clock ---
             Text {
                 id: clockText
                 text: Qt.formatDateTime(new Date(), "h:mm AP")
@@ -100,7 +95,7 @@ Item {
         }
     }
 
-    // --- Launcher Window (Now a sibling to the panel) ---
+    // --- Launcher Window ---
     Rectangle {
         id: launcherOverlay
         anchors.fill: parent
