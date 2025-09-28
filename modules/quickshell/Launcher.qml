@@ -1,39 +1,49 @@
 import QtQuick
 import QtQuick.Layouts
-import Qt.labs.process 1.0
-import Qt.labs.folderlistmodel 1.0
 
 // Launcher.qml
 // This component is the entire launcher window, including the overlay.
 // It is controlled by an external script via a signal file.
+// This version uses a Timer and XHR to check for the signal file, avoiding experimental modules.
 
 Rectangle {
     id: launcherOverlay
     anchors.fill: parent
     color: "#00000080"
-    // Visibility is now bound to the existence of the signal file
-    visible: launcherSignalWatcher.contains("launcher.signal")
+    
+    property bool launcherShouldBeVisible: false
+    visible: launcherShouldBeVisible
     enabled: visible
 
-    // Process to call the script to hide the launcher
-    Process {
-        id: hideLauncherProcess
-        command: "C:/All/SaaS/archlinux-dotfiles/scripts/toggle-launcher.sh"
+    // Timer to periodically check for the signal file
+    Timer {
+        interval: 250 // Check every 250ms
+        running: true
+        repeat: true
+
+        onTriggered: {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    // For local files, a status of 0 or 200 is success.
+                    if (xhr.status === 200 || xhr.status === 0) {
+                        launcherOverlay.launcherShouldBeVisible = true;
+                    } else {
+                        launcherOverlay.launcherShouldBeVisible = false;
+                    }
+                }
+            }
+            // Add a cache-busting query to the URL
+            xhr.open("GET", "file:///tmp/quickshell/launcher.signal?t=" + new Date().getTime());
+            xhr.send();
+        }
     }
 
-    // Watcher to detect the signal file
-    FolderListModel {
-        id: launcherSignalWatcher
-        folder: "file:///tmp/quickshell"
-        nameFilters: ["launcher.signal"]
-    }
-
-    // Close the launcher by clicking the background
+    // Clicking the background no longer closes the launcher.
+    // The user must press the hotkey again to toggle it.
     MouseArea {
         anchors.fill: parent
-        onClicked: {
-            hideLauncherProcess.start()
-        }
+        onClicked: {} // Absorb clicks
     }
 
     // The main launcher window
@@ -48,7 +58,7 @@ Rectangle {
         border.width: 2
         radius: 10
 
-        // This inner MouseArea prevents clicks on the launcher body from closing it
+        // This inner MouseArea prevents clicks on the launcher body from propagating
         MouseArea { anchors.fill: parent; onClicked: {} }
 
         // Model containing the applications for the grid
@@ -101,8 +111,8 @@ Rectangle {
                     hoverEnabled: true
 
                     onClicked: {
-                        // Clicking an icon closes the launcher
-                        hideLauncherProcess.start()
+                        // Clicking an icon also no longer closes the launcher.
+                        // This is now a pure toggle via the hotkey.
                     }
                 }
             }

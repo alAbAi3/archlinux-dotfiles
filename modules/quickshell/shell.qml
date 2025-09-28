@@ -9,11 +9,9 @@ Item {
     height: Screen.height
 
     // Instantiate the Launcher component. It will be invisible by default.
-    /*
     Launcher {
         id: launcher
     }
-    */
 
     // Instantiate the Panel component.
     Panel {
