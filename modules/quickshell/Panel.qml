@@ -48,6 +48,7 @@ Rectangle {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
+                    console.log("DEBUG: Launcher button clicked in Panel.qml. Emitting signal...")
                     // Emit the signal when clicked
                     panel.launcherButtonClicked()
                 }
