@@ -63,39 +63,44 @@ install_aur_packages() {
 }
 
 remove_conflicting_files() {
-    echo "-> Checking for and removing conflicting default config files..."
-    CONFLICTING_FILE="$HOME/.config/hypr/hyprland.conf"
-    if [ -f "$CONFLICTING_FILE" ] && [ ! -L "$CONFLICTING_FILE" ]; then
-        echo "  - Deleting conflicting file: $CONFLICTING_FILE"
-        rm "$CONFLICTING_FILE"
-    else
-        echo "  - No conflicts found."
-    fi
+    echo "-> Checking for and removing conflicting default configs..."
+    # Add any conflicting files or directories here
+    CONFLICTS=("$HOME/.config/hypr" "$HOME/.config/quickshell")
+
+    for conflict in "${CONFLICTS[@]}"; do
+        if [ -e "$conflict" ] && [ ! -L "$conflict" ]; then
+            echo "  - Deleting conflicting file/directory: $conflict"
+            rm -rf "$conflict"
+        fi
+    done
+    echo "  - No conflicts found or conflicts resolved."
 }
 
-stow_dotfiles() {
-    echo "-> Symlinking dotfiles using stow..."
-    if ! command -v stow &> /dev/null; then
-        echo "  - ERROR: 'stow' is not installed. Please install it with 'sudo pacman -S stow'."
-        return 1
-    fi
+link_dotfiles() {
+    echo "-> Linking configuration files..."
 
     # Ensure target directories exist
     mkdir -p "$HOME/.config"
     mkdir -p "$HOME/.local/bin"
 
-    echo "   Stowing modules: $STOW_MODULES"
+    # Link config directories using ln -s for clarity and reliability
+    echo "  - Linking hypr config..."
+    ln -sf "$PROJECT_ROOT/modules/hypr" "$HOME/.config/hypr"
+
+    echo "  - Linking quickshell config..."
+    ln -sf "$PROJECT_ROOT/modules/quickshell" "$HOME/.config/quickshell"
+
+    # Stow is still good for populating a bin directory
+    echo "  - Stowing scripts to ~/.local/bin..."
+    if ! command -v stow &> /dev/null; then
+        echo "  - ERROR: 'stow' is not installed. Please install it with 'sudo pacman -S stow'."
+        return 1
+    fi
     pushd "$PROJECT_ROOT/modules" > /dev/null
-    
-    # Handle config files
-    stow -v --restow --target="$HOME/.config" hypr quickshell
-
-    # Handle scripts separately
     stow -v --restow --target="$HOME/.local/bin" scripts
-
     popd > /dev/null
 
-    echo "  - Stow complete."
+    echo "  - Linking complete."
 }
 
 
@@ -106,7 +111,7 @@ main() {
     install_nvidia_packages_if_needed
     install_aur_packages
     remove_conflicting_files
-    stow_dotfiles
+    link_dotfiles
     echo "✅ Bootstrap complete."
 }
 
