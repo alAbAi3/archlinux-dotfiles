@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
-import "../lib/fuzzysort.js" as FuzzySort
 
 Window {
     id: window
@@ -14,19 +13,13 @@ Window {
     color: "#00000000"
 
     // --- Models ---
-    // The master list of all applications
     ListModel {
         id: sourceAppModel
         ListElement { name: "Terminal"; icon: "T"; command: "alacritty" }
         ListElement { name: "Browser"; icon: "B"; command: "firefox" }
         ListElement { name: "Files"; icon: "F"; command: "dolphin" }
         ListElement { name: "VS Code"; icon: "C"; command: "code" }
-        ListElement { name: "Settings"; icon: "S"; command: "" } // Empty command for disabled items
-    }
-
-    // The filtered list that is displayed on screen
-    ListModel {
-        id: filteredAppModel
+        ListElement { name: "Settings"; icon: "S"; command: "" }
     }
 
     // --- Main UI ---
@@ -58,19 +51,13 @@ Window {
             anchors.margins: 20
             spacing: 20
 
-            SearchBox {
-                id: searchBox
-                Layout.fillWidth: true
-                onTextChanged: filterApps(text)
-            }
-
             GridView {
                 id: appGrid
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 cellWidth: 130
                 cellHeight: 120
-                model: filteredAppModel
+                model: sourceAppModel // Display the full model directly
                 
                 delegate: AppDelegate {
                     appName: model.name
@@ -79,41 +66,11 @@ Window {
 
                 onItemClicked: (item) => {
                     if (item.model.command) {
-                        // Print the command to stdout for the shell script to capture
                         console.log(item.model.command)
                         Qt.quit()
                     }
                 }
             }
         }
-    }
-
-    // --- Logic ---
-    function filterApps(searchText) {
-        filteredAppModel.clear();
-
-        if (searchText.trim() === "") {
-            // If search is empty, show all apps
-            for (let i = 0; i < sourceAppModel.count; i++) {
-                filteredAppModel.append(sourceAppModel.get(i));
-            }
-            return;
-        }
-
-        // Use fuzzysort to find matches
-        const results = FuzzySort.go(searchText, sourceAppModel, {key:'name'});
-
-        // Add results to the filtered model
-        for (let i = 0; i < results.length; i++) {
-            filteredAppModel.append(results[i].obj);
-        }
-    }
-
-    // --- Lifecycle ---
-    Component.onCompleted: {
-        // Initially, show all applications
-        filterApps("");
-        // Focus the search box on startup
-        searchBox.input.forceActiveFocus();
     }
 }
