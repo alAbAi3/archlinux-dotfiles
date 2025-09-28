@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# quickshell-client
+# A simple client to send commands to the running QuickShell instance.
+# This script should be placed in a directory that is in your system's PATH,
+# for example by creating a symlink: `sudo ln -sf $(pwd)/quickshell-client /usr/local/bin/`
+
+set -euo pipefail
+
+# For now, the only command is --toggle-launcher
+if [ "${1:-}" != "--toggle-launcher" ]; then
+  echo "Usage: $(basename "$0") --toggle-launcher" >&2
+  exit 1
+fi
+
+# The signal is sent by touching a file that shell.qml is watching.
+# Ensure the directory exists
+mkdir -p /tmp
+touch /tmp/quickshell.launcher.toggle
