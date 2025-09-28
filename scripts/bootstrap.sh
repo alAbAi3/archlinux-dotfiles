@@ -80,19 +80,19 @@ stow_dotfiles() {
         return 1
     fi
 
+    # Ensure target directories exist
+    mkdir -p "$HOME/.config"
+    mkdir -p "$HOME/.local/bin"
+
     echo "   Stowing modules: $STOW_MODULES"
     pushd "$PROJECT_ROOT/modules" > /dev/null
-    for module in $STOW_MODULES; do
-        if [ "$module" == "scripts" ]; then
-            echo "   - Stowing scripts to ~/.local/bin..."
-            mkdir -p "$HOME/.local/bin"
-            stow -v --restow --target="$HOME/.local/bin" "$module"
-        else
-            echo "   - Stowing $module..."
-            mkdir -p "$HOME/.config/$module"
-            stow -v --restow --target="$HOME/.config/$module" "$module"
-        fi
-    done
+    
+    # Handle config files
+    stow -v --restow --target="$HOME/.config" hypr quickshell
+
+    # Handle scripts separately
+    stow -v --restow --target="$HOME/.local/bin" scripts
+
     popd > /dev/null
 
     echo "  - Stow complete."
