@@ -22,20 +22,13 @@ Rectangle {
         repeat: true
 
         onTriggered: {
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    // For local files, a status of 0 or 200 is success.
-                    if (xhr.status === 200 || xhr.status === 0) {
-                        launcherOverlay.launcherShouldBeVisible = true;
-                    } else {
-                        launcherOverlay.launcherShouldBeVisible = false;
-                    }
-                }
+            try {
+                // This will throw an exception if the file doesn't exist.
+                Qt.readUrl("file:///tmp/quickshell/launcher.signal");
+                launcherOverlay.launcherShouldBeVisible = true;
+            } catch (e) {
+                launcherOverlay.launcherShouldBeVisible = false;
             }
-            // Add a cache-busting query to the URL
-            xhr.open("GET", "file:///tmp/quickshell/launcher.signal?t=" + new Date().getTime());
-            xhr.send();
         }
     }
 
