@@ -2,16 +2,13 @@ import QtQuick
 import QtQuick.Layouts
 
 // Panel.qml
-// This component is the top bar, containing the launcher button, workspaces, and clock.
+// This component is the top bar, containing the workspaces and clock.
 
 Rectangle {
     id: panel
     // The width will be set by the parent (the main shell.qml)
     height: 40
     color: "#282A36"
-
-    // This signal is emitted when the launcher button is clicked
-    signal launcherButtonClicked()
 
     // --- Timer for the Clock ---
     Timer {
@@ -28,33 +25,6 @@ Rectangle {
         anchors.fill: parent
         anchors.leftMargin: 10
         anchors.rightMargin: 10
-
-        // --- Launcher Button ---
-        Rectangle {
-            width: 100
-            height: 30
-            Layout.alignment: Qt.AlignVCenter
-            color: "#6272A4"
-            radius: 5
-
-            Text {
-                anchors.centerIn: parent
-                text: "Launcher"
-                color: "#F8F8F2"
-                font.bold: true
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    // Accept the mouse event to prevent it from propagating to other items.
-                    mouse.accepted = true;
-                    // Emit the signal to open the launcher.
-                    panel.launcherButtonClicked()
-                }
-            }
-        }
 
         // --- Workspace Buttons ---
         RowLayout {

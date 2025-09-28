@@ -1,27 +1,38 @@
 import QtQuick
 import QtQuick.Layouts
+import Qt.labs.process 1.0
+import Qt.labs.folderlistmodel 1.0
 
 // Launcher.qml
 // This component is the entire launcher window, including the overlay.
-// It is designed to be controlled from outside.
+// It is controlled by an external script via a signal file.
 
 Rectangle {
     id: launcherOverlay
     anchors.fill: parent
     color: "#00000080"
-    visible: false
+    // Visibility is now bound to the existence of the signal file
+    visible: launcherSignalWatcher.contains("launcher.signal")
     enabled: visible
 
-    // Public function to be called to show the launcher
-    function open() {
-        visible = true;
+    // Process to call the script to hide the launcher
+    Process {
+        id: hideLauncherProcess
+        command: "C:/All/SaaS/archlinux-dotfiles/scripts/toggle-launcher.sh"
+    }
+
+    // Watcher to detect the signal file
+    FolderListModel {
+        id: launcherSignalWatcher
+        folder: "file:///tmp/quickshell"
+        nameFilters: ["launcher.signal"]
     }
 
     // Close the launcher by clicking the background
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            launcherOverlay.visible = false
+            hideLauncherProcess.start()
         }
     }
 
@@ -91,7 +102,7 @@ Rectangle {
 
                     onClicked: {
                         // Clicking an icon closes the launcher
-                        launcherOverlay.visible = false;
+                        hideLauncherProcess.start()
                     }
                 }
             }

@@ -20,9 +20,5 @@ Item {
         anchors.top: parent.top
         // Make it as wide as the screen.
         width: parent.width
-
-        // Connect the panel's signal to the launcher's function.
-        // When the button in the panel is clicked, it will call launcher.open().
-        onLauncherButtonClicked: launcher.open()
     }
 }
