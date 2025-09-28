@@ -101,6 +101,7 @@ Item {
         anchors.fill: parent
         color: "#00000080"
         visible: false
+        enabled: visible
 
         MouseArea {
             anchors.fill: parent
