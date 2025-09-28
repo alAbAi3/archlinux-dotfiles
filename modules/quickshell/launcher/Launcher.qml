@@ -62,13 +62,7 @@ Window {
                 delegate: AppDelegate {
                     appName: model.name
                     appIcon: model.icon
-                }
-
-                onItemClicked: (item) => {
-                    if (item.model.command) {
-                        console.log(item.model.command)
-                        Qt.quit()
-                    }
+                    appCommand: model.command // Pass the command to the delegate
                 }
             }
         }

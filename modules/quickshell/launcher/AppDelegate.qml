@@ -46,6 +46,11 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
 
-        // The clicked signal will be handled by the GridView's onItemClicked handler
+        onClicked: {
+            if (appCommand) {
+                console.log(appCommand)
+                Qt.quit()
+            }
+        }
     }
 }
