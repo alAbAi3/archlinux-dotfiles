@@ -1,10 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
-import Qt.labs.platform 1.1 // For FileSystemWatcher
 
-// Phase 1: MVP Baseline Panel + Launcher
-// - A top bar with 8 workspace buttons and a live clock.
-// - A basic launcher window, toggled by a file signal.
+// Phase 1 (revised): MVP Baseline Panel + Launcher
+// - A top bar with a launcher button, 8 workspace buttons, and a live clock.
+// - Launcher is toggled by the button, not a keybinding.
 
 Rectangle {
     id: root
@@ -28,10 +27,35 @@ Rectangle {
         anchors.leftMargin: 10
         anchors.rightMargin: 10
 
+        // --- Launcher Button ---
+        Rectangle {
+            width: 100
+            height: 30
+            Layout.alignment: Qt.AlignVCenter
+            color: "#6272A4"
+            radius: 5
+
+            Text {
+                anchors.centerIn: parent
+                text: "Launcher"
+                color: "#F8F8F2"
+                font.bold: true
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    launcherOverlay.visible = !launcherOverlay.visible
+                }
+            }
+        }
+
         // --- Workspace Buttons ---
         RowLayout {
             id: workspaceList
             spacing: 5
+            Layout.alignment: Qt.AlignVCenter
 
             Repeater {
                 model: 8 // Phase 1: 8 workspaces
@@ -69,9 +93,10 @@ Rectangle {
     }
 
     // --- Launcher Window ---
-    // A semi-transparent background that catches clicks to close the launcher
     Rectangle {
         id: launcherOverlay
+        // Use the main window as the parent for the overlay
+        parent: root.parent
         anchors.fill: parent
         color: "#00000080" // Semi-transparent black
         visible: false
@@ -101,24 +126,10 @@ Rectangle {
                 font.pixelSize: 24
             }
 
-            // This inner MouseArea prevents clicks *on* the launcher from propagating
-            // to the overlay and closing it.
             MouseArea {
                 anchors.fill: parent
                 onClicked: {}
             }
-        }
-    }
-
-    // --- File-based Signal for Launcher ---
-    FileSystemWatcher {
-        id: launcherWatcher
-        // The client script will 'touch' this file.
-        // Using a file in /tmp or $XDG_RUNTIME_DIR is standard for signals.
-        filePath: "/tmp/quickshell.launcher.toggle" 
-
-        onFileChanged: {
-            launcherOverlay.visible = !launcherOverlay.visible
         }
     }
 }
