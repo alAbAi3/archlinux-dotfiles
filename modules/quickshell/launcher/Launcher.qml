@@ -7,7 +7,7 @@ Window {
     width: 800
     height: 500
     visible: true
-    title: "QuickShell Launcher"
+    title: "QuickShell-Launcher"
 
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
     color: "#00000000"
