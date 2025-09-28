@@ -1,42 +1,36 @@
 import QtQuick
 import QtQuick.Layouts
+import QtDBus 1.0
 
 // Launcher.qml
 // This component is the entire launcher window, including the overlay.
-// It is controlled by an external script via a signal file.
-// This version uses a Timer and XHR to check for the signal file, avoiding experimental modules.
+// It is controlled via D-Bus.
 
 Rectangle {
     id: launcherOverlay
     anchors.fill: parent
     color: "#00000080"
-    
-    property bool launcherShouldBeVisible: false
-    visible: launcherShouldBeVisible
+    visible: false
     enabled: visible
 
-    // Timer to periodically check for the signal file
-    Timer {
-        interval: 250 // Check every 250ms
-        running: true
-        repeat: true
+    // D-Bus Adaptor to expose methods to the system bus
+    DBusAdaptor {
+        busName: "org.quickshell.Launcher"
+        path: "/Launcher"
+        iface: "org.quickshell.Launcher"
 
-        onTriggered: {
-            try {
-                // This will throw an exception if the file doesn't exist.
-                Qt.readUrl("file:///tmp/quickshell/launcher.signal");
-                launcherOverlay.launcherShouldBeVisible = true;
-            } catch (e) {
-                launcherOverlay.launcherShouldBeVisible = false;
-            }
+        // This function becomes a D-Bus method that can be called externally.
+        function toggle() {
+            launcherOverlay.visible = !launcherOverlay.visible
         }
     }
 
-    // Clicking the background no longer closes the launcher.
-    // The user must press the hotkey again to toggle it.
+    // Close the launcher by clicking the background
     MouseArea {
         anchors.fill: parent
-        onClicked: {} // Absorb clicks
+        onClicked: {
+            launcherOverlay.visible = false
+        }
     }
 
     // The main launcher window
@@ -51,7 +45,7 @@ Rectangle {
         border.width: 2
         radius: 10
 
-        // This inner MouseArea prevents clicks on the launcher body from propagating
+        // This inner MouseArea prevents clicks on the launcher body from closing it
         MouseArea { anchors.fill: parent; onClicked: {} }
 
         // Model containing the applications for the grid
@@ -104,8 +98,8 @@ Rectangle {
                     hoverEnabled: true
 
                     onClicked: {
-                        // Clicking an icon also no longer closes the launcher.
-                        // This is now a pure toggle via the hotkey.
+                        // Clicking an icon closes the launcher
+                        launcherOverlay.visible = false
                     }
                 }
             }
