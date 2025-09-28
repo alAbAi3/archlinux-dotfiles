@@ -20,7 +20,7 @@ PACMAN_PACKAGES_FILE="$PROJECT_ROOT/packages/packages-base.txt"
 # List of packages to install from the AUR
 AUR_PACKAGES_FILE="$PROJECT_ROOT/packages/packages-aur.txt"
 # Stow modules to link
-STOW_MODULES="hypr quickshell"
+STOW_MODULES="hypr quickshell scripts"
 # NVIDIA packages
 NVIDIA_PACKAGES="linux-headers nvidia-dkms qt5-wayland qt6-wayland egl-wayland"
 
@@ -82,14 +82,16 @@ stow_dotfiles() {
 
     echo "   Stowing modules: $STOW_MODULES"
     pushd "$PROJECT_ROOT/modules" > /dev/null
-    # Stow each module into its own subdirectory within ~/.config
     for module in $STOW_MODULES; do
-        echo "   - Stowing $module..."
-        # Ensure the target directory exists before stowing
-        mkdir -p "$HOME/.config/$module"
-        # The target is now $HOME/.config/<module_name>
-        # This ensures files from 'hypr' go into '.config/hypr', etc.
-        stow -v --restow --target="$HOME/.config/$module" "$module"
+        if [ "$module" == "scripts" ]; then
+            echo "   - Stowing scripts to ~/.local/bin..."
+            mkdir -p "$HOME/.local/bin"
+            stow -v --restow --target="$HOME/.local/bin" "$module"
+        else
+            echo "   - Stowing $module..."
+            mkdir -p "$HOME/.config/$module"
+            stow -v --restow --target="$HOME/.config/$module" "$module"
+        fi
     done
     popd > /dev/null
 

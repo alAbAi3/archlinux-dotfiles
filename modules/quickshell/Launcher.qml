@@ -1,35 +1,32 @@
 import QtQuick
+import QtQuick.Window 2.15
 import QtQuick.Layouts
-import QtDBus 1.0
 
 // Launcher.qml
-// This component is the entire launcher window, including the overlay.
-// It is controlled via D-Bus.
+// This is a standalone launcher application.
 
-Rectangle {
-    id: launcherOverlay
-    anchors.fill: parent
-    color: "#00000080"
-    visible: false
-    enabled: visible
+Window {
+    id: window
+    width: Screen.width
+    height: Screen.height
+    visible: true
 
-    // D-Bus Adaptor to expose methods to the system bus
-    DBusAdaptor {
-        busName: "org.quickshell.Launcher"
-        path: "/Launcher"
-        iface: "org.quickshell.Launcher"
+    // Set window flags for an overlay/launcher type application
+    flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
+    color: "#00000000" // Transparent background for the window itself
 
-        // This function becomes a D-Bus method that can be called externally.
-        function toggle() {
-            launcherOverlay.visible = !launcherOverlay.visible
-        }
-    }
-
-    // Close the launcher by clicking the background
-    MouseArea {
+    // Semi-transparent overlay that covers the screen
+    Rectangle {
+        id: launcherOverlay
         anchors.fill: parent
-        onClicked: {
-            launcherOverlay.visible = false
+        color: "#00000080"
+
+        // Close the launcher by clicking the background
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                Qt.quit()
+            }
         }
     }
 
@@ -98,8 +95,8 @@ Rectangle {
                     hoverEnabled: true
 
                     onClicked: {
-                        // Clicking an icon closes the launcher
-                        launcherOverlay.visible = false
+                        // Clicking an icon also quits the application
+                        Qt.quit()
                     }
                 }
             }
