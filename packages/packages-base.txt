@@ -7,5 +7,3 @@ wl-clipboard
 grim
 slurp
 stow
-qt6-declarative-qml-labs-filesystem
-qt6-declarative-qml-labs-process

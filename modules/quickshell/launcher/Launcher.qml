@@ -1,10 +1,7 @@
-
-// modules/quickshell/launcher/Launcher.qml
 import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
 import "../lib/fuzzysort.js" as FuzzySort
-import Qt.labs.fs 1.0
 
 Window {
     id: window
@@ -15,14 +12,6 @@ Window {
 
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
     color: "#00000000"
-
-    // Component to write the selected command to a temp file
-    FileSystem {
-        id: fs
-    }
-
-    // The file path for signaling the chosen command to the shell script
-    property string commandFile: "/tmp/quickshell-launcher.command"
 
     // --- Models ---
     // The master list of all applications
@@ -90,7 +79,8 @@ Window {
 
                 onItemClicked: (item) => {
                     if (item.model.command) {
-                        fs.writeFile(commandFile, item.model.command)
+                        // Print the command to stdout for the shell script to capture
+                        console.log(item.model.command)
                         Qt.quit()
                     }
                 }
