@@ -121,10 +121,10 @@ Rectangle {
             // Model containing the applications for the grid
             ListModel {
                 id: appModel
-                ListElement { name: "Terminal"; icon: ""; command: "alacritty" } // Icon for Alacritty/Terminal
-                ListElement { name: "Browser"; icon: ""; command: "firefox" } // Icon for Firefox
-                ListElement { name: "Files"; icon: ""; command: "dolphin" } // Icon for Folder
-                ListElement { name: "Settings"; icon: ""; command: "" }      // Icon for Gear
+                ListElement { name: "Terminal"; icon: "T"; command: "alacritty" }
+                ListElement { name: "Browser"; icon: "B"; command: "firefox" }
+                ListElement { name: "Files"; icon: "F"; command: "dolphin" }
+                ListElement { name: "Settings"; icon: "S"; command: "" }
             }
 
             // Grid view to display the applications
@@ -147,9 +147,8 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.topMargin: 15
-                        // NOTE: You must have a Nerd Font installed for these icons to render correctly.
-                        // e.g., 'Symbols Nerd Font' or 'FiraCode Nerd Font'.
-                        font.family: "Symbols Nerd Font"
+                        // TEST: Use a standard font to diagnose rendering issues.
+                        font.family: "monospace"
                         font.pixelSize: 40
                         text: icon
                         color: "#F8F8F2"
@@ -175,7 +174,6 @@ Rectangle {
 
                         onClicked: {
                             // For now, clicking just closes the launcher.
-                            // The next step is to execute the 'command' property.
                             launcherOverlay.visible = false;
                         }
                     }
