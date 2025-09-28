@@ -137,43 +137,38 @@ Rectangle {
 
                 model: appModel
 
-                delegate: Rectangle {
+                delegate: Item {
                     width: 100
                     height: 100
-                    color: "transparent"
 
                     Text { // Icon
                         id: appIcon
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.topMargin: 15
-                        // TEST: Use a standard font to diagnose rendering issues.
                         font.family: "monospace"
                         font.pixelSize: 40
                         text: icon
-                        color: "#F8F8F2"
+                        color: mouseArea.containsMouse ? "#BD93F9" : "#F8F8F2"
                     }
 
                     Text { // Name
+                        id: appName
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.bottomMargin: 15
                         text: name
-                        color: "#F8F8F2"
+                        color: mouseArea.containsMouse ? "#BD93F9" : "#F8F8F2"
                         font.bold: true
                     }
 
                     MouseArea {
+                        id: mouseArea
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         hoverEnabled: true
-                        
-                        // Visual feedback on hover
-                        onEntered: parent.color = "#6272A4"
-                        onExited: parent.color = "transparent"
 
                         onClicked: {
-                            // For now, clicking just closes the launcher.
                             launcherOverlay.visible = false;
                         }
                     }
