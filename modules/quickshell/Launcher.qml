@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Window 2.15
 import QtQuick.Layouts
+import Qt.labs.process 1.0
 
 // Launcher.qml
 // This is a standalone launcher application.
@@ -15,6 +16,10 @@ Window {
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
     color: "#00000000" // Transparent background for the window itself
 
+    Process {
+        id: process
+    }
+
     // Semi-transparent overlay that covers the screen
     Rectangle {
         id: launcherOverlay
@@ -25,7 +30,7 @@ Window {
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                Qt.quit()
+                window.visible = false
             }
         }
     }
@@ -95,8 +100,10 @@ Window {
                     hoverEnabled: true
 
                     onClicked: {
-                        // Clicking an icon also quits the application
-                        Qt.quit()
+                        if (command) {
+                            process.exec("hyprctl", ["dispatch", "exec", command]);
+                            window.visible = false;
+                        }
                     }
                 }
             }
