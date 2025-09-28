@@ -14,7 +14,6 @@ Rectangle {
 
     // Public function to be called to show the launcher
     function open() {
-        console.log("DEBUG: launcher.open() called in Launcher.qml. Setting visible to true.")
         visible = true;
     }
 

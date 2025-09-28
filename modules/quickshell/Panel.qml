@@ -48,8 +48,9 @@ Rectangle {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    console.log("DEBUG: Launcher button clicked in Panel.qml. Emitting signal...")
-                    // Emit the signal when clicked
+                    // Accept the mouse event to prevent it from propagating to other items.
+                    mouse.accepted = true;
+                    // Emit the signal to open the launcher.
                     panel.launcherButtonClicked()
                 }
             }

@@ -23,9 +23,6 @@ Item {
 
         // Connect the panel's signal to the launcher's function.
         // When the button in the panel is clicked, it will call launcher.open().
-        onLauncherButtonClicked: {
-            console.log("DEBUG: Signal received in shell.qml. Calling launcher.open()...")
-            launcher.open()
-        }
+        onLauncherButtonClicked: launcher.open()
     }
 }
