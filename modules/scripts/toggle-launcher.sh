@@ -25,7 +25,7 @@ echo "Process not found. Starting launcher..." >> "$LOG_FILE"
 
 # Run the QML launcher and capture its standard output.
 # Crucially, also redirect stderr to the log to catch QML errors.
-COMMAND_TO_RUN=$(quickshell -qml "$QML_FILE" 2>> "$LOG_FILE")
+COMMAND_TO_RUN=$(quickshell -p "$QML_FILE" 2>> "$LOG_FILE")
 
 echo "Captured command: '$COMMAND_TO_RUN'" >> "$LOG_FILE"
 
