@@ -17,6 +17,7 @@ export QML_IMPORT_PATH="$HOME/.config/quickshell"
 
 log_msg "QML File: $QML_FILE"
 log_msg "Process Pattern: $PROCESS_PATTERN"
+log_msg "DEBUG: QML_IMPORT_PATH = $QML_IMPORT_PATH"
 
 # If the launcher is already running, just kill it and exit.
 if pgrep -f "$PROCESS_PATTERN" > /dev/null; then

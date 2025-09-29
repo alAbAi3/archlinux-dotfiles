@@ -34,12 +34,14 @@ fi
 log_msg "DEBUG: WALLPAPER_DIR = $WALLPAPER_DIR"
 log_msg "DEBUG: Contents of WALLPAPER_DIR: $(ls -l "$WALLPAPER_DIR")"
 log_msg "DEBUG: Find command output: $(find "$WALLPAPER_DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \))"
+log_msg "DEBUG: QML_IMPORT_PATH = $QML_IMPORT_PATH"
 
 log_msg "Finding wallpapers in $WALLPAPER_DIR"
 
 # Find all jpg and png files, create a JSON array of their full paths.
 WALLPAPER_JSON=$(find "$WALLPAPER_DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) | jq -R -s 'split("\n") | map(select(length > 0))')
 
+log_msg "DEBUG: WALLPAPER_JSON content: $WALLPAPER_JSON"
 log_msg "Found JSON: $WALLPAPER_JSON"
 
 # Write JSON to a temporary file
