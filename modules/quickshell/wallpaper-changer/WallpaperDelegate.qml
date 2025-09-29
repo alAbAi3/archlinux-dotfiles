@@ -52,7 +52,7 @@ Rectangle {
 
         onClicked: {
             // Like the launcher, print the path to stdout and quit.
-            console.log(wallpaperPath)
+            console.log("DEBUG qml: " + wallpaperPath)
             Qt.quit()
         }
     }

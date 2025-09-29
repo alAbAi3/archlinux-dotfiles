@@ -31,31 +31,27 @@ if [ ! -d "$WALLPAPER_DIR" ]; then
     exit 1
 fi
 
-log_msg "DEBUG: WALLPAPER_DIR = $WALLPAPER_DIR"
-log_msg "DEBUG: Contents of WALLPAPER_DIR: $(ls -l "$WALLPAPER_DIR")"
-log_msg "DEBUG: Find command output: $(find "$WALLPAPER_DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \))"
-log_msg "DEBUG: QML_IMPORT_PATH = $QML_IMPORT_PATH"
-
 log_msg "Finding wallpapers in $WALLPAPER_DIR"
 
 # Find all jpg and png files, create a JSON array of their full paths.
 WALLPAPER_JSON=$(find "$WALLPAPER_DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) | jq -R -s 'split("\n") | map(select(length > 0))')
 
-log_msg "DEBUG: WALLPAPER_JSON content: $WALLPAPER_JSON"
-log_msg "Found JSON: $WALLPAPER_JSON"
-
 # Write JSON to a temporary file
+# Create cache directory if it doesn't exist
+mkdir -p "$(dirname "$TEMP_JSON_FILE")"
 echo "$WALLPAPER_JSON" > "$TEMP_JSON_FILE"
 
-# Launch the QML window without passing any command-line arguments.
-# Redirect stderr to the main log file to catch QML errors.
-SELECTED_WALLPAPER=$(quickshell -p "$QML_FILE" 2>> "$LOG_FILE")
+# Launch the QML window, capturing all output to parse it.
+SELECTION_OUTPUT=$(quickshell -p "$QML_FILE" 2>&1)
 
-log_msg "Captured selection: '$SELECTED_WALLPAPER'"
+log_msg "Captured selection output: '$SELECTION_OUTPUT'"
 
-# If a wallpaper was selected (printed to stdout), apply the theme.
+# Parse the output to find the line with our debug prefix.
+SELECTED_WALLPAPER=$(echo "$SELECTION_OUTPUT" | grep "DEBUG qml:" | sed 's/^.*DEBUG qml: //')
+
+# If a wallpaper was selected, apply the theme.
 if [ -n "$SELECTED_WALLPAPER" ]; then
-    log_msg "Executing theme change..."
+    log_msg "Executing theme change for: $SELECTED_WALLPAPER"
     sh "$APPLY_THEME_SCRIPT" "$SELECTED_WALLPAPER" >> "$LOG_FILE" 2>&1
 else
     log_msg "No wallpaper selected."

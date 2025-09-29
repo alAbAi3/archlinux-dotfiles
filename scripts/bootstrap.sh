@@ -85,6 +85,7 @@ link_dotfiles() {
     mkdir -p "$HOME/.local/bin"
     mkdir -p "$HOME/.cache/rice"
     mkdir -p "$HOME/.cache/swww"
+    mkdir -p "$HOME/.cache/swww"
     mkdir -p "$HOME/Pictures/Wallpapers"
 
     # Link config directories using ln -s for clarity and reliability

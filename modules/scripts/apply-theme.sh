@@ -19,22 +19,26 @@ TEMPLATE_FILE="$THEME_DIR/templates/colors.qml.template"
 OUTPUT_FILE="$PROJECT_ROOT/modules/quickshell/theme/colors.qml"
 WAL_CACHE="$HOME/.cache/wal"
 
+# --- Default Wallpaper Handling ---
+if [ -z "$1" ]; then
+    log_msg "No wallpaper path provided. Using a random wallpaper as default."
+    WALLPAPER=$(find "$PROJECT_ROOT/wallpapers" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) | shuf -n 1)
+    
+    if [ -z "$WALLPAPER" ]; then
+        log_msg "Error: No default wallpapers found in '$PROJECT_ROOT/wallpapers'."
+        exit 1
+    fi
+    set -- "$WALLPAPER" # Set the first argument to the found wallpaper
+fi
+
 # --- Debugging Paths ---
 log_msg "DEBUG: SCRIPT_DIR = $SCRIPT_DIR"
 log_msg "DEBUG: PROJECT_ROOT = $PROJECT_ROOT"
 log_msg "DEBUG: THEME_DIR = $THEME_DIR"
 log_msg "DEBUG: TEMPLATE_FILE = $TEMPLATE_FILE"
 log_msg "DEBUG: OUTPUT_FILE = $OUTPUT_FILE"
-log_msg "DEBUG: Output directory exists? [ -d $(dirname "$OUTPUT_FILE") ] && echo 'Yes' || echo 'No'"
-log_msg "DEBUG: Output directory writable? [ -w $(dirname "$OUTPUT_FILE") ] && echo 'Yes' || echo 'No'"
 
 # --- Validation ---
-if [ -z "$1" ]; then
-    log_msg "Error: No wallpaper path provided."
-    echo "Usage: $0 /path/to/wallpaper.jpg" >&2
-    exit 1
-fi
-
 WALLPAPER=$(realpath "$1")
 log_msg "Applying theme from wallpaper: $WALLPAPER"
 
