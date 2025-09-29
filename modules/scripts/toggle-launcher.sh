@@ -3,39 +3,41 @@
 # This script toggles the launcher.
 # It captures the stdout of the QML process to get the command to run.
 
-LOG_FILE="/tmp/launcher-debug.log"
+# --- Source Logging Library ---
+# Assuming this script will be symlinked to ~/.local/bin, and the lib is in ~/.config
+. "$HOME/.config/quickshell/lib/logging.sh"
 
-echo "--- Script Start ---" >> "$LOG_FILE"
-date >> "$LOG_FILE"
+log_msg "--- Script Start ---"
 
 QML_FILE="$HOME/.config/quickshell/launcher/Launcher.qml"
 PROCESS_PATTERN="quickshell.*launcher/Launcher.qml"
 
-echo "QML File: $QML_FILE" >> "$LOG_FILE"
-echo "Process Pattern: $PROCESS_PATTERN" >> "$LOG_FILE"
+log_msg "QML File: $QML_FILE"
+log_msg "Process Pattern: $PROCESS_PATTERN"
 
 # If the launcher is already running, just kill it and exit.
 if pgrep -f "$PROCESS_PATTERN" > /dev/null; then
-    echo "Process found. Killing existing launcher." >> "$LOG_FILE"
+    log_msg "Process found. Killing existing launcher."
     pkill -f "$PROCESS_PATTERN"
     exit 0
 fi
 
-echo "Process not found. Starting launcher..." >> "$LOG_FILE"
+log_msg "Process not found. Starting launcher..."
 
 # Run the QML launcher and capture its standard output.
-# Crucially, also redirect stderr to the log to catch QML errors.
+# Crucially, also redirect stderr to the main log file to catch QML errors.
 COMMAND_TO_RUN=$(quickshell -p "$QML_FILE" 2>> "$LOG_FILE")
 
-echo "Captured command: '$COMMAND_TO_RUN'" >> "$LOG_FILE"
+log_msg "Captured command: '$COMMAND_TO_RUN'"
 
 # After the launcher closes, check if it produced a command.
 if [ -n "$COMMAND_TO_RUN" ]; then
-    echo "Executing command with hyprctl..." >> "$LOG_FILE"
+    log_msg "Executing command with hyprctl..."
+    # Redirect hyprctl output to the main log file
     hyprctl dispatch exec "$COMMAND_TO_RUN" >> "$LOG_FILE" 2>&1
-    echo "hyprctl command finished." >> "$LOG_FILE"
+    log_msg "hyprctl command finished."
 else
-    echo "No command was captured. Nothing to execute." >> "$LOG_FILE"
+    log_msg "No command was captured. Nothing to execute."
 fi
 
-echo "--- Script End ---" >> "$LOG_FILE"
+log_msg "--- Script End ---"

@@ -82,6 +82,7 @@ link_dotfiles() {
     # Ensure target directories exist
     mkdir -p "$HOME/.config"
     mkdir -p "$HOME/.local/bin"
+    mkdir -p "$HOME/.cache/rice"
 
     # Link config directories using ln -s for clarity and reliability
     echo "  - Linking hypr config..."
