@@ -91,6 +91,9 @@ link_dotfiles() {
     echo "  - Linking quickshell config..."
     ln -sf "$PROJECT_ROOT/modules/quickshell" "$HOME/.config/quickshell"
 
+    echo "  - Linking wallpapers directory..."
+    ln -sf "$PROJECT_ROOT/wallpapers" "$HOME/wallpapers"
+
     # Stow is still good for populating a bin directory
     echo "  - Stowing scripts to ~/.local/bin..."
     if ! command -v stow &> /dev/null; then
