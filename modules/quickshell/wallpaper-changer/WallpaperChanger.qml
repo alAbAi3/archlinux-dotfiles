@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
 import QtQuick.Controls // Added for ScrollView
-import "theme"
+import "file:///home/alibek/.config/quickshell/theme"
 
 Window {
     id: window
