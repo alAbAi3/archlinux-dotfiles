@@ -18,6 +18,15 @@ TEMPLATE_FILE="$THEME_DIR/templates/colors.qml.template"
 OUTPUT_FILE="$PROJECT_ROOT/modules/quickshell/theme/colors.qml"
 WAL_CACHE="$HOME/.cache/wal"
 
+# --- Debugging Paths ---
+log_msg "DEBUG: SCRIPT_DIR = $SCRIPT_DIR"
+log_msg "DEBUG: PROJECT_ROOT = $PROJECT_ROOT"
+log_msg "DEBUG: THEME_DIR = $THEME_DIR"
+log_msg "DEBUG: TEMPLATE_FILE = $TEMPLATE_FILE"
+log_msg "DEBUG: OUTPUT_FILE = $OUTPUT_FILE"
+log_msg "DEBUG: Output directory exists? [ -d $(dirname "$OUTPUT_FILE") ] && echo 'Yes' || echo 'No'"
+log_msg "DEBUG: Output directory writable? [ -w $(dirname "$OUTPUT_FILE") ] && echo 'Yes' || echo 'No'"
+
 # --- Validation ---
 if [ -z "$1" ]; then
     log_msg "Error: No wallpaper path provided."
