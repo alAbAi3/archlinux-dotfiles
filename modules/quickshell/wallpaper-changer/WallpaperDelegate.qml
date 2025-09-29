@@ -1,5 +1,4 @@
 import QtQuick
-import "file:///home/alibek/.config/quickshell/theme"
 
 Rectangle {
     id: delegateRoot
@@ -15,8 +14,8 @@ Rectangle {
 
     Rectangle {
         anchors.fill: parent
-        color: mouseArea.containsMouse ? Colors.color8 : "transparent"
-        border.color: Colors.color4
+        color: mouseArea.containsMouse ? "#444444" : "transparent"
+        border.color: "#888888"
         border.width: 2
         radius: 8
     }
@@ -39,7 +38,7 @@ Rectangle {
         Text {
             anchors.centerIn: parent
             text: wallpaperFile
-            color: Colors.foreground
+            color: "#FFFFFF"
             font.bold: true
         }
     }

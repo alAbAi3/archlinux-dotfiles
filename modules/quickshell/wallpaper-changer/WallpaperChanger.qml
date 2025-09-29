@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
 import QtQuick.Controls // Added for ScrollView
-import "file:///home/alibek/.config/quickshell/theme"
 
 Window {
     id: window
@@ -56,8 +55,8 @@ Window {
         width: 950
         height: 550
         anchors.centerIn: parent
-        color: Colors.background
-        border.color: Colors.color4
+        color: "#1E1E1E" // Hardcoded background color
+        border.color: "#888888" // Hardcoded border color
         border.width: 1
         radius: 10
 
