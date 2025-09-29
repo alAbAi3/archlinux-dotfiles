@@ -41,6 +41,9 @@ WALLPAPER_JSON=$(find "$WALLPAPER_DIR" -type f \( -iname '*.jpg' -o -iname '*.jp
 mkdir -p "$(dirname "$TEMP_JSON_FILE")"
 echo "$WALLPAPER_JSON" > "$TEMP_JSON_FILE"
 
+# Allow QML to read local files via XMLHttpRequest, which is required for our JSON loading.
+export QML_XHR_ALLOW_FILE_READ=1
+
 # Launch the QML window, capturing all output to parse it.
 SELECTION_OUTPUT=$(quickshell -p "$QML_FILE" 2>&1)
 
