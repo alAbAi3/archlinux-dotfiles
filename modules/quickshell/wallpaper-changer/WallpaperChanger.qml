@@ -20,7 +20,7 @@ Window {
     }
 
     Component.onCompleted: {
-        var wallpaperJsonFile = Qt.getenv("RICE_WALLPAPER_JSON_FILE");
+        var wallpaperJsonFile = Qt.application.arguments[0];
         if (wallpaperJsonFile) {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "file://" + wallpaperJsonFile);
@@ -43,7 +43,7 @@ Window {
             };
             xhr.send();
         } else {
-            console.warn("No RICE_WALLPAPER_JSON_FILE environment variable provided.");
+            console.warn("No wallpaper JSON file path provided as argument.");
         }
     }
 

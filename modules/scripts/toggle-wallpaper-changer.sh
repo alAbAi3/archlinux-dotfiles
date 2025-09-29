@@ -47,12 +47,9 @@ log_msg "Found JSON: $WALLPAPER_JSON"
 # Write JSON to a temporary file
 echo "$WALLPAPER_JSON" > "$TEMP_JSON_FILE"
 
-# Export the path to the JSON file as an environment variable
-export RICE_WALLPAPER_JSON_FILE="$TEMP_JSON_FILE"
-
-# Launch the QML window without passing the property via command line.
+# Launch the QML window, passing the path to the temporary JSON file as a command-line argument.
 # Redirect stderr to the main log file to catch QML errors.
-SELECTED_WALLPAPER=$(quickshell -p "$QML_FILE" 2>> "$LOG_FILE")
+SELECTED_WALLPAPER=$(quickshell -p "$QML_FILE" "$TEMP_JSON_FILE" 2>> "$LOG_FILE")
 
 log_msg "Captured selection: '$SELECTED_WALLPAPER'"
 
