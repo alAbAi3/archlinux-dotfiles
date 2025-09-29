@@ -7,6 +7,8 @@
 
 log_msg "--- Attempting to start swww daemon via swww-daemon ---"
 
+sleep 1 # Give Hyprland a moment to initialize Wayland components
+
 # Run swww-daemon and redirect all its output (stdout and stderr) to the rice.log
 swww-daemon >> "$HOME/.cache/rice/rice.log" 2>&1
 

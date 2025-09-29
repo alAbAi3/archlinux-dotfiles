@@ -14,6 +14,9 @@ PROCESS_PATTERN="quickshell.*WallpaperChanger.qml"
 APPLY_THEME_SCRIPT="$HOME/.local/bin/apply-theme.sh"
 TEMP_JSON_FILE="$HOME/.cache/rice/wallpapers.json"
 
+# Set QML_IMPORT_PATH to help quickshell find modules
+export QML_IMPORT_PATH="$HOME/.config/quickshell"
+
 # --- Main Logic ---
 
 # Kill existing process if it's running

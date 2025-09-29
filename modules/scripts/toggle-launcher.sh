@@ -12,6 +12,9 @@ log_msg "--- Script Start ---"
 QML_FILE="$HOME/.config/quickshell/launcher/Launcher.qml"
 PROCESS_PATTERN="quickshell.*launcher/Launcher.qml"
 
+# Set QML_IMPORT_PATH to help quickshell find modules
+export QML_IMPORT_PATH="$HOME/.config/quickshell"
+
 log_msg "QML File: $QML_FILE"
 log_msg "Process Pattern: $PROCESS_PATTERN"
 
