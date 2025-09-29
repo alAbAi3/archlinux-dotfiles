@@ -9,9 +9,10 @@
 log_msg "--- Script Start ---"
 
 # --- Configuration ---
-# Get the directory of the script
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-PROJECT_ROOT=$(realpath "$SCRIPT_DIR/../..") # Adjust based on script location
+# Get the directory of the script's original location, even if symlinked
+ORIGINAL_SCRIPT_PATH=$(realpath "${BASH_SOURCE[0]}")
+SCRIPT_DIR=$(dirname "$ORIGINAL_SCRIPT_PATH")
+PROJECT_ROOT=$(dirname "$(dirname "$(dirname "$ORIGINAL_SCRIPT_PATH")")")
 
 THEME_DIR="$HOME/.config/quickshell/theme"
 TEMPLATE_FILE="$THEME_DIR/templates/colors.qml.template"
