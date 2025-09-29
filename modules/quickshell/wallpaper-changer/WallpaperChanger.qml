@@ -14,8 +14,8 @@ Window {
     color: "#00000000"
 
     // This property will be set by the shell script that launches this window.
-    // It will contain a JSON string of wallpaper paths.
-    property string wallpaperJson: "[]"
+    // It will contain the path to a JSON file with wallpaper paths.
+    property string wallpaperJsonFile: ""
 
     // The model that will be populated by parsing the JSON.
     ListModel {
@@ -23,14 +23,29 @@ Window {
     }
 
     Component.onCompleted: {
-        try {
-            var paths = JSON.parse(wallpaperJson);
-            for (var i = 0; i < paths.length; i++) {
-                wallpaperModel.append({ "path": paths[i] });
-            }
-        } catch (e) {
-            console.error("Failed to parse wallpaper JSON:", e);
-            console.error("Received JSON:", wallpaperJson);
+        if (wallpaperJsonFile) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "file://" + wallpaperJsonFile);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        try {
+                            var paths = JSON.parse(xhr.responseText);
+                            for (var i = 0; i < paths.length; i++) {
+                                wallpaperModel.append({ "path": paths[i] });
+                            }
+                        } catch (e) {
+                            console.error("Failed to parse wallpaper JSON from file:", e);
+                            console.error("File content:", xhr.responseText);
+                        }
+                    } else {
+                        console.error("Failed to load wallpaper JSON file. Status:", xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        } else {
+            console.warn("No wallpaperJsonFile path provided.");
         }
     }
 

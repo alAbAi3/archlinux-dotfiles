@@ -12,6 +12,7 @@ QML_FILE="$HOME/.config/quickshell/wallpaper-changer/WallpaperChanger.qml"
 WALLPAPER_DIR="$HOME/wallpapers"
 PROCESS_PATTERN="quickshell.*WallpaperChanger.qml"
 APPLY_THEME_SCRIPT="$HOME/.local/bin/apply-theme.sh"
+TEMP_JSON_FILE="$HOME/.cache/rice/wallpapers.json"
 
 # --- Main Logic ---
 
@@ -34,9 +35,12 @@ WALLPAPER_JSON=$(find "$WALLPAPER_DIR" -type f \( -iname '*.jpg' -o -iname '*.jp
 
 log_msg "Found JSON: $WALLPAPER_JSON"
 
-# Launch the QML window, passing the JSON as a property.
+# Write JSON to a temporary file
+echo "$WALLPAPER_JSON" > "$TEMP_JSON_FILE"
+
+# Launch the QML window, passing the path to the temporary JSON file as a property.
 # Redirect stderr to the main log file to catch QML errors.
-SELECTED_WALLPAPER=$(quickshell -p "$QML_FILE" --property "{\"wallpaperJson\": \"$WALLPAPER_JSON\"}" 2>> "$LOG_FILE")
+SELECTED_WALLPAPER=$(quickshell -p "$QML_FILE" --property "wallpaperJsonFile=$TEMP_JSON_FILE" 2>> "$LOG_FILE")
 
 log_msg "Captured selection: '$SELECTED_WALLPAPER'"
 

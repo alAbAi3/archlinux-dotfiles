@@ -11,7 +11,7 @@ log_msg "--- Script Start ---"
 # --- Configuration ---
 THEME_DIR="$HOME/.config/quickshell/theme"
 TEMPLATE_FILE="$THEME_DIR/templates/colors.qml.template"
-OUTPUT_FILE="$THEME_DIR/colors.qml"
+OUTPUT_FILE="$PROJECT_ROOT/modules/quickshell/theme/colors.qml"
 WAL_CACHE="$HOME/.cache/wal"
 
 # --- Validation ---
