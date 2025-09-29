@@ -9,6 +9,7 @@
 #
 
 set -e # Exit immediately if a command exits with a non-zero status.
+set -x # Enable verbose output for debugging
 
 # --- Configuration ---
 # Get the directory of the script
@@ -121,9 +122,26 @@ main() {
     install_pacman_packages
     install_nvidia_packages_if_needed
     install_aur_packages
+
+    # Explicit check for swww after AUR install
+    if ! command -v swww &> /dev/null; then
+        echo "  - ERROR: 'swww' not found after AUR install! Please check AUR_PACKAGES_FILE."
+        exit 1
+    else
+        echo "  - 'swww' found."
+    fi
     remove_conflicting_files
     set_script_permissions # Ensure scripts are executable before linking
     link_dotfiles
+
+    # Explicit check for ~/.cache/rice after linking
+    if [ ! -d "$HOME/.cache/rice" ]; then
+        echo "  - ERROR: '~/.cache/rice' directory not created!"
+        exit 1
+    else
+        echo "  - '~/.cache/rice' directory found."
+    fi
+
     echo "✅ Bootstrap complete."
 }
 
