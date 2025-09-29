@@ -9,7 +9,11 @@ Rectangle {
     id: panel
     // The width will be set by the parent (the main shell.qml)
     height: 40
-    color: Colors.background
+    
+    // Use a semi-transparent "glassy" background and an accent border
+    color: Qt.rgba(Colors.color0.r, Colors.color0.g, Colors.color0.b, 0.6)
+    border.color: Colors.color8
+    border.width: 1
 
     // --- Timer for the Clock ---
     Timer {
