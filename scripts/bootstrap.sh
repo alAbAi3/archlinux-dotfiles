@@ -103,6 +103,13 @@ link_dotfiles() {
     echo "  - Linking complete."
 }
 
+set_script_permissions() {
+    echo "-> Making all shell scripts executable..."
+    find "$PROJECT_ROOT/modules/scripts" -type f -name "*.sh" -exec chmod +x {} +
+    find "$PROJECT_ROOT/scripts" -type f -name "*.sh" -exec chmod +x {} +
+    echo "  - Permissions set."
+}
+
 
 # --- Main Execution ---
 main() {
@@ -111,6 +118,7 @@ main() {
     install_nvidia_packages_if_needed
     install_aur_packages
     remove_conflicting_files
+    set_script_permissions # Ensure scripts are executable before linking
     link_dotfiles
     echo "✅ Bootstrap complete."
 }

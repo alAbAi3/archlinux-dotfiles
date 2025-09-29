@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
+import "../theme"
 
 Window {
     id: window
@@ -26,7 +27,7 @@ Window {
     Rectangle {
         id: launcherOverlay
         anchors.fill: parent
-        color: "#00000080"
+        color: Qt.rgba(0, 0, 0, 0.5) // Semi-transparent background
 
         MouseArea {
             anchors.fill: parent
@@ -39,8 +40,8 @@ Window {
         width: 650
         height: 450
         anchors.centerIn: parent
-        color: "#282A36"
-        border.color: "#6272A4"
+        color: Colors.background
+        border.color: Colors.color4
         border.width: 1
         radius: 10
 

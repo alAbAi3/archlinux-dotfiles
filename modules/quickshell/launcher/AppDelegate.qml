@@ -1,6 +1,7 @@
 
 // modules/quickshell/launcher/AppDelegate.qml
 import QtQuick
+import "../theme"
 
 Rectangle {
     id: delegateRoot
@@ -15,7 +16,7 @@ Rectangle {
 
     Rectangle {
         anchors.fill: parent
-        color: mouseArea.containsMouse ? "#44475A" : "transparent"
+        color: mouseArea.containsMouse ? Colors.color8 : "transparent"
         radius: 8
     }
 
@@ -27,7 +28,7 @@ Rectangle {
         font.family: "monospace"
         font.pixelSize: 40
         text: appIcon
-        color: "#F8F8F2"
+        color: Colors.foreground
     }
 
     Text {
@@ -36,7 +37,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: 15
         text: appName
-        color: "#F8F8F2"
+        color: Colors.foreground
         font.bold: true
     }
 

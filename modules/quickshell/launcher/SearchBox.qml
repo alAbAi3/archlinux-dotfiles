@@ -1,13 +1,14 @@
 
 // modules/quickshell/launcher/SearchBox.qml
 import QtQuick
+import "../theme"
 
 Rectangle {
     id: searchBox
     height: 50
-    color: "#383A4A"
+    color: Colors.color0
     radius: 8
-    border.color: "#BD93F9"
+    border.color: Colors.color5
     border.width: 1
 
     property alias text: searchInput.text
@@ -19,7 +20,7 @@ Rectangle {
         anchors.leftMargin: 15
         anchors.rightMargin: 15
         
-        color: "#F8F8F2"
+        color: Colors.foreground
         font.pixelSize: 18
         
         verticalAlignment: TextInput.AlignVCenter
@@ -27,7 +28,7 @@ Rectangle {
         // The placeholder text
         Text {
             text: "Search apps..."
-            color: "#6272A4"
+            color: Colors.color8
             font.pixelSize: 18
             visible: !searchInput.text
             anchors.fill: parent

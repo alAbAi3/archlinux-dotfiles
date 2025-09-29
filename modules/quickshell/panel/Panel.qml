@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../theme"
 
 // Panel.qml
 // This component is the top bar, containing the workspaces and clock.
@@ -8,7 +9,7 @@ Rectangle {
     id: panel
     // The width will be set by the parent (the main shell.qml)
     height: 40
-    color: "#282A36"
+    color: Colors.background
 
     // --- Timer for the Clock ---
     Timer {
@@ -37,15 +38,15 @@ Rectangle {
                 delegate: Rectangle {
                     width: 30
                     height: 30
-                    color: index === 0 ? "#BD93F9" : "#44475A"
+                    color: index === 0 ? Colors.color5 : "transparent"
                     radius: 5
-                    border.color: "#6272A4"
+                    border.color: Colors.color4
                     border.width: 1
 
                     Text {
                         anchors.centerIn: parent
                         text: index + 1
-                        color: "#F8F8F2"
+                        color: Colors.foreground
                         font.bold: true
                     }
                 }
@@ -60,7 +61,7 @@ Rectangle {
         Text {
             id: clockText
             text: Qt.formatDateTime(new Date(), "h:mm AP")
-            color: "#F8F8F2"
+            color: Colors.foreground
             font.pixelSize: 16
             Layout.alignment: Qt.AlignVCenter
         }
