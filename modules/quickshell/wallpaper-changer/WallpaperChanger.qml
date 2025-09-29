@@ -20,31 +20,27 @@ Window {
     }
 
     Component.onCompleted: {
-        var wallpaperJsonFile = Qt.application.arguments[0];
-        if (wallpaperJsonFile) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "file://" + wallpaperJsonFile);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        try {
-                            var paths = JSON.parse(xhr.responseText);
-                            for (var i = 0; i < paths.length; i++) {
-                                wallpaperModel.append({ "path": paths[i] });
-                            }
-                        } catch (e) {
-                            console.error("Failed to parse wallpaper JSON from file:", e);
-                            console.error("File content:", xhr.responseText);
+        var wallpaperJsonFile = "file:///home/alibek/.cache/rice/wallpapers.json";
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", wallpaperJsonFile);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    try {
+                        var paths = JSON.parse(xhr.responseText);
+                        for (var i = 0; i < paths.length; i++) {
+                            wallpaperModel.append({ "path": paths[i] });
                         }
-                    } else {
-                        console.error("Failed to load wallpaper JSON file. Status:", xhr.status);
+                    } catch (e) {
+                        console.error("Failed to parse wallpaper JSON from file:", e);
+                        console.error("File content:", xhr.responseText);
                     }
+                } else {
+                    console.error("Failed to load wallpaper JSON file. Status:", xhr.status);
                 }
-            };
-            xhr.send();
-        } else {
-            console.warn("No wallpaper JSON file path provided as argument.");
-        }
+            }
+        };
+        xhr.send();
     }
 
     // --- Main UI ---

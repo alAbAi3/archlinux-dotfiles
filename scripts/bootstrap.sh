@@ -84,6 +84,8 @@ link_dotfiles() {
     mkdir -p "$HOME/.config"
     mkdir -p "$HOME/.local/bin"
     mkdir -p "$HOME/.cache/rice"
+    mkdir -p "$HOME/.cache/swww"
+    mkdir -p "$HOME/Pictures/Wallpapers"
 
     # Link config directories using ln -s for clarity and reliability
     echo "  - Linking hypr config..."
@@ -93,7 +95,7 @@ link_dotfiles() {
     ln -sf "$PROJECT_ROOT/modules/quickshell" "$HOME/.config/quickshell"
 
     echo "  - Linking wallpapers directory..."
-    ln -sf "$PROJECT_ROOT/wallpapers" "$HOME/wallpapers"
+    ln -sf "$PROJECT_ROOT/wallpapers" "$HOME/Pictures/Wallpapers"
 
     # Stow is still good for populating a bin directory
     echo "  - Stowing scripts to ~/.local/bin..."
