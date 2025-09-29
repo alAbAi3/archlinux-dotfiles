@@ -31,6 +31,10 @@ if [ ! -d "$WALLPAPER_DIR" ]; then
     exit 1
 fi
 
+log_msg "DEBUG: WALLPAPER_DIR = $WALLPAPER_DIR"
+log_msg "DEBUG: Contents of WALLPAPER_DIR: $(ls -l "$WALLPAPER_DIR")"
+log_msg "DEBUG: Find command output: $(find "$WALLPAPER_DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \))"
+
 log_msg "Finding wallpapers in $WALLPAPER_DIR"
 
 # Find all jpg and png files, create a JSON array of their full paths.
