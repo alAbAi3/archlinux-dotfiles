@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
-import "../theme"
+import "theme"
 
 Window {
     id: window

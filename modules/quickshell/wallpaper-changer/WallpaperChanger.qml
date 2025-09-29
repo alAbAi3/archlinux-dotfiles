@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
 import QtQuick.Controls // Added for ScrollView
-import "../theme"
+import "theme"
 
 Window {
     id: window
@@ -20,7 +20,7 @@ Window {
     }
 
     Component.onCompleted: {
-        var wallpaperJsonFile = Qt.application.environment("RICE_WALLPAPER_JSON_FILE");
+        var wallpaperJsonFile = Qt.getenv("RICE_WALLPAPER_JSON_FILE");
         if (wallpaperJsonFile) {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "file://" + wallpaperJsonFile);

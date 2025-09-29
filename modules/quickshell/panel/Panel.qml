@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import "../theme"
+import "theme"
 
 // Panel.qml
 // This component is the top bar, containing the workspaces and clock.
