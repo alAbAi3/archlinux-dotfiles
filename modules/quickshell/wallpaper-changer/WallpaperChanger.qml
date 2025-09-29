@@ -13,16 +13,13 @@ Window {
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
     color: "#00000000"
 
-    // This property will be set by the shell script that launches this window.
-    // It will contain the path to a JSON file with wallpaper paths.
-    property string wallpaperJsonFile: ""
-
     // The model that will be populated by parsing the JSON.
     ListModel {
         id: wallpaperModel
     }
 
     Component.onCompleted: {
+        var wallpaperJsonFile = Qt.application.environment("RICE_WALLPAPER_JSON_FILE");
         if (wallpaperJsonFile) {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "file://" + wallpaperJsonFile);
@@ -45,7 +42,7 @@ Window {
             };
             xhr.send();
         } else {
-            console.warn("No wallpaperJsonFile path provided.");
+            console.warn("No RICE_WALLPAPER_JSON_FILE environment variable provided.");
         }
     }
 
