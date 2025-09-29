@@ -54,3 +54,37 @@ The primary objective was to achieve **Phase 0** of the project roadmap: launch 
 ## Final Status: Phase 0 Complete
 
 After a long and complex debugging process, all foundational issues have been resolved. The project has successfully achieved the **Phase 0** deliverable: a minimal Hyprland session that launches a custom, functional QuickShell panel.
+
+---
+
+## Problem 6: Implementing the App Launcher
+
+This phase involved implementing the application launcher, which surfaced a complex interplay of issues involving shell scripting, QML implementation, and window manager rules.
+
+*   **Symptom:** The application launcher, though defined in `Launcher.qml`, would not appear when triggered by its hotkey.
+*   **Initial Investigation & Solutions:**
+    1.  **Execution Strategy:** It was determined that the launcher needed to be a separate process. The initial approach of using `Qt.labs.process` from within QML failed due to unavailable packages on the system.
+    2.  **Robust Communication:** The execution was refactored. A `toggle-launcher.sh` script now starts the QML process. The QML process, when an app is clicked, prints the desired command to standard output (`stdout`) and quits. The shell script captures this output and executes the command using `hyprctl`. This proved to be a reliable, dependency-free communication method.
+    3.  **Hotkey Issues:** At one point, no logs were being created, indicating the script wasn't running at all. This was traced back to an invalid keybinding (`SUPER` key alone). Reverting to `SUPER+SPACE` fixed the trigger.
+    4.  **Command-Line Arguments:** The logs revealed a `The following arguments were not expected` error. The `quickshell` executable required the `-p` flag to load a QML file, not `-qml`. The script was corrected.
+
+*   **Sub-Problem: QML Implementation Errors**
+    1.  **`qs-blackhole` Error:** After fixing the script, a cryptic `Script qrc:/qs-blackhole unavailable` error appeared. This was isolated to the JavaScript import for a fuzzy search library. The feature was temporarily removed to proceed.
+    2.  **`onItemClicked` Error:** A subsequent error, `Cannot assign to non-existent property "onItemClicked"`, revealed that the click handler was incorrectly placed on the `GridView` component. The logic was correctly moved into the `AppDelegate`'s `MouseArea`.
+
+*   **Sub-Problem: Window Rule Conflicts**
+    1.  **Symptom 1:** The launcher appeared but was styled as a tiny bar in the middle of the screen.
+    2.  **Symptom 2:** After a fix, the launcher appeared correctly, but the main panel broke and adopted the launcher's size.
+    3.  **Investigation:** The root cause was that both the panel and the launcher shared the same window class (`org.quickshell`), causing their `windowrulev2` rules in `hyprland.conf` to conflict.
+    4.  **Solution:** The definitive solution was to make both components identifiable. `shell.qml` (the panel) and `Launcher.qml` were both wrapped in `Window` elements, each with a unique `title` property (`QuickShell-Panel` and `QuickShell-Launcher`). The rules in `hyprland.conf` were then changed to target these specific, non-conflicting titles, completely isolating them.
+
+*   **Sub-Problem: `bootstrap.sh` and Symlink Failures**
+    1.  **Symptom:** Even with correct code, the launcher reported `Could not open config file`.
+    2.  **Investigation:** The user's `~/.config` directory did not have the correct file structure. The `stow` command in `bootstrap.sh` was being used incorrectly, creating a mess of symlinks in the wrong locations (e.g., `~/.config/hyprland.conf` instead of `~/.config/hypr/hyprland.conf`).
+    3.  **Solution:** The `stow` logic for config files in `bootstrap.sh` was replaced entirely with a more direct and reliable `ln -s` command to link the directories correctly. The user was guided to clean up the old, incorrect symlinks before re-running the corrected bootstrap script.
+
+---
+
+## Final Status: Phase 1 Complete
+
+All launcher-related issues have been resolved. The project now has a functional, refactored panel and a robust, floating application launcher, successfully completing the goals of **Phase 1**.
