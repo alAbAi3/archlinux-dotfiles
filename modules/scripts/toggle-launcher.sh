@@ -16,7 +16,8 @@ generate_app_list() {
 
     # Find all .desktop files
     find /usr/share/applications ~/.local/share/applications -name "*.desktop" |
-    while read -r file; do
+    while read -r file;
+    do
         # Skip entries that shouldn't be displayed
         if grep -q "NoDisplay=true" "$file"; then
             continue
