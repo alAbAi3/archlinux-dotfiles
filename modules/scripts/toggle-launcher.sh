@@ -15,13 +15,15 @@ generate_master_app_list() {
     log_msg "Generating master app list..."
     local temp_json_list=$(mktemp)
 
-    find /usr/share/applications ~/.local/share/applications -name "*.desktop" |
-    while read -r file; do
+    find /usr/share/applications ~/.local/share/applications -name "*.desktop" | while read -r file; do
         if grep -q "NoDisplay=true" "$file"; then continue; fi
+        
         name=$(grep -m 1 "^Name=" "$file" | sed 's/^Name=//')
         exec_cmd=$(grep -m 1 "^Exec=" "$file" | sed 's/^Exec=//' | sed 's/ %.*//')
         icon=$(grep -m 1 "^Icon=" "$file" | sed 's/^Icon=//')
+
         if [ -n "$name" ] && [ -n "$exec_cmd" ]; then
+            log_msg "  - Found app: $name"
             jq -n \
                --arg name "$name" \
                --arg icon "${icon:-application-x-executable}" \
@@ -29,9 +31,25 @@ generate_master_app_list() {
                '{name: $name, icon: $icon, command: $command}' >> "$temp_json_list"
         fi
     done
+
+    # Check if any apps were actually added to the temp file
+    if [ ! -s "$temp_json_list" ]; then
+        log_msg "WARN: Temp list is empty. No apps were successfully parsed."
+        echo "[]" > "$MASTER_APP_LIST"
+        rm "$temp_json_list"
+        return
+    fi
+
     jq -s '.' "$temp_json_list" > "$MASTER_APP_LIST"
     rm "$temp_json_list"
-    log_msg "Master app list generated at $MASTER_APP_LIST"
+
+    # Final validation
+    if [ ! -s "$MASTER_APP_LIST" ] || ! jq -e . "$MASTER_APP_LIST" >/dev/null 2>&1; then
+        log_msg "ERROR: Failed to generate a valid JSON app list."
+        echo "[]" > "$MASTER_APP_LIST"
+    else
+        log_msg "Master app list generated successfully."
+    fi
 }
 
 # --- Main Logic ---
