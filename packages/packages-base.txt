@@ -11,4 +11,4 @@ noto-fonts-emoji
 ttf-font-awesome
 ttf-dejavu
 jq
-qt6-declarative-addons
+qt6-declarative
