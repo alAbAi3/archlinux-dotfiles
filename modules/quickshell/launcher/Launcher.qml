@@ -75,19 +75,17 @@ Window {
                 }
             }
 
-            GridView {
+            ListView {
                 id: appGrid
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                cellWidth: 130
-                cellHeight: 120
-                // Model is now set dynamically
-                
-                delegate: AppDelegate {
-                    appName: modelData.name
-                    // Use first letter of name as a fallback icon
-                    appIcon: modelData.name ? modelData.name.substring(0, 1) : "?"
-                    appCommand: modelData.command
+                model: allApps // The model is set from readAppsFromFile
+
+                delegate: Text {
+                    // Display the 'name' property of each object in the model
+                    text: modelData.name
+                    color: "white" // Use a hardcoded color to rule out theme issues
+                    font.pixelSize: 16
                 }
             }
         }
