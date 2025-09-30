@@ -1,9 +1,5 @@
 #!/bin/sh
 
-# Exit on error and print commands
-set -e
-set -x
-
 # This script toggles the launcher and handles search logic.
 
 . "$HOME/.config/quickshell/lib/logging.sh"
@@ -27,7 +23,6 @@ generate_master_app_list() {
         icon=$(grep -m 1 "^Icon=" "$file" | sed 's/^Icon=//')
 
         if [ -n "$name" ] && [ -n "$exec_cmd" ]; then
-            log_msg "  - Found app: $name"
             jq -n \
                --arg name "$name" \
                --arg icon "${icon:-application-x-executable}" \
@@ -36,7 +31,6 @@ generate_master_app_list() {
         fi
     done
 
-    # Check if any apps were actually added to the temp file
     if [ ! -s "$temp_json_list" ]; then
         log_msg "WARN: Temp list is empty. No apps were successfully parsed."
         echo "[]" > "$MASTER_APP_LIST"
@@ -46,14 +40,7 @@ generate_master_app_list() {
 
     jq -s '.' "$temp_json_list" > "$MASTER_APP_LIST"
     rm "$temp_json_list"
-
-    # Final validation
-    if [ ! -s "$MASTER_APP_LIST" ] || ! jq -e . "$MASTER_APP_LIST" >/dev/null 2>&1; then
-        log_msg "ERROR: Failed to generate a valid JSON app list."
-        echo "[]" > "$MASTER_APP_LIST"
-    else
-        log_msg "Master app list generated successfully."
-    fi
+    log_msg "Master app list generated successfully."
 }
 
 # --- Main Logic ---
@@ -66,7 +53,7 @@ if pgrep -f "$PROCESS_PATTERN" > /dev/null; then
     exit 0
 fi
 
-# Ensure the master list is always up-to-date
+# Always generate the master list to ensure it's fresh.
 generate_master_app_list
 
 # Filter the list based on search query ($1)
@@ -81,20 +68,9 @@ fi
 
 # Run the QML launcher and capture its output
 export QML_IMPORT_PATH="$HOME/.config/quickshell"
+export QML_XHR_ALLOW_FILE_READ=1 # CORRECT VARIABLE NAME
 log_msg "Starting launcher..."
-
-# Create a temporary QML file in the same directory to preserve relative paths
-TMP_QML_FILE="${QML_FILE}.tmp"
-
-# Read the JSON data and inject it directly into the QML file
-APPS_JSON_DATA=$(cat "$DISPLAY_APP_LIST")
-sed "s|%%APPS_JSON_DATA%%|$APPS_JSON_DATA|" "$QML_FILE" > "$TMP_QML_FILE"
-
-OUTPUT=$(quickshell -p "$TMP_QML_FILE" 2>> "$LOG_FILE")
-
-# Clean up the temporary file
-rm "$TMP_QML_FILE"
-
+OUTPUT=$(quickshell -p "$QML_FILE" 2>> "$LOG_FILE")
 log_msg "Launcher output: '$OUTPUT'"
 
 # --- Handle Launcher Output ---
@@ -104,16 +80,16 @@ case "$OUTPUT" in
         NEW_QUERY=$(echo "$OUTPUT" | sed 's/SEARCH://')
         log_msg "Relaunching with new search: '$NEW_QUERY'"
         exec "$0" "$NEW_QUERY" # exec replaces the current script process
-        ;; 
+        ;;
     "" ) 
         # Launcher was closed without selection
         log_msg "Launcher closed without action."
-        ;; 
+        ;;
     *) 
         # An app was selected, execute it
         log_msg "Executing command: '$OUTPUT'"
         hyprctl dispatch exec "$OUTPUT" >> "$LOG_FILE" 2>&1
-        ;; 
+        ;;
 esac
 
 log_msg "--- Script End ---"

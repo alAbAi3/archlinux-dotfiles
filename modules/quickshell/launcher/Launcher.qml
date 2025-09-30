@@ -14,12 +14,25 @@ Window {
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
     color: "#00000000"
 
-    // The shell script will inject the JSON data here
-    property var allApps: %%APPS_JSON_DATA%%
+    property var allApps: []
+
+    // --- Functions ---
+    function readAppsFromFile() {
+        var xhr = new XMLHttpRequest();
+        var url = "file:///" + System.getenv("HOME") + "/.cache/quickshell_apps.json";
+        xhr.open("GET", url, false); // Synchronous request
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && (xhr.status === 200 || xhr.status === 0)) {
+                allApps = JSON.parse(xhr.responseText);
+                appGrid.model = allApps;
+            }
+        }
+        xhr.send();
+    }
 
     // --- Component Initialization ---
     Component.onCompleted: {
-        appGrid.model = allApps;
+        readAppsFromFile();
         searchBox.input.forceActiveFocus(); // Focus the search box on open
     }
 
@@ -55,10 +68,7 @@ Window {
             SearchBox {
                 id: searchBox
                 Layout.fillWidth: true
-                // When Enter is pressed, quit and output the search query.
-                onAccepted: {
-                    Qt.quit("SEARCH:" + text)
-                }
+                onAccepted: Qt.quit("SEARCH:" + text)
             }
 
             GridView {
@@ -70,7 +80,6 @@ Window {
                 
                 delegate: AppDelegate {
                     appName: modelData.name
-                    // Use first letter of name as a fallback icon
                     appIcon: modelData.name ? modelData.name.substring(0, 1) : "?"
                     appCommand: modelData.command
                 }
