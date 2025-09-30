@@ -14,6 +14,9 @@ Rectangle {
     property alias text: searchInput.text
     property alias input: searchInput
 
+    // Define a signal that this component can emit
+    signal accepted()
+
     TextInput {
         id: searchInput
         anchors.fill: parent
@@ -24,6 +27,9 @@ Rectangle {
         font.pixelSize: 18
         
         verticalAlignment: TextInput.AlignVCenter
+
+        // When the underlying TextInput is accepted (Enter pressed), emit our own signal
+        onAccepted: searchBox.accepted()
         
         // The placeholder text
         Text {
