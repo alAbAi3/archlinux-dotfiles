@@ -81,12 +81,15 @@ fi
 export QML_IMPORT_PATH="$HOME/.config/quickshell"
 log_msg "Starting launcher..."
 
-TMP_QML_FILE=$(mktemp --suffix=.qml)
+# Create a temporary QML file in the same directory to preserve relative paths
+TMP_QML_FILE="${QML_FILE}.tmp"
 APPS_JSON_PATH="file://$DISPLAY_APP_LIST"
 # Use a different delimiter for sed because the path contains slashes
 sed "s|%%APPS_JSON_PATH%%|$APPS_JSON_PATH|" "$QML_FILE" > "$TMP_QML_FILE"
 
 OUTPUT=$(quickshell -p "$TMP_QML_FILE" 2>> "$LOG_FILE")
+
+# Clean up the temporary file
 rm "$TMP_QML_FILE"
 
 log_msg "Launcher output: '$OUTPUT'"
