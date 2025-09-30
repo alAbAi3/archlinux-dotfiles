@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# Exit on error and print commands
+set -e
+set -x
+
 # This script toggles the launcher and handles search logic.
 
 . "$HOME/.config/quickshell/lib/logging.sh"
@@ -79,6 +83,7 @@ fi
 
 # Run the QML launcher and capture its output
 export QML_IMPORT_PATH="$HOME/.config/quickshell"
+export QML_XHR_ALLOW_FILE_TO_READ=1 # Allow reading local files
 log_msg "Starting launcher..."
 
 # Create a temporary QML file in the same directory to preserve relative paths
