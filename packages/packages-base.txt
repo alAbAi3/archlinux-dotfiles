@@ -1,5 +1,4 @@
 hyprland
-quickshell-git
 swww
 foot
 alacritty
