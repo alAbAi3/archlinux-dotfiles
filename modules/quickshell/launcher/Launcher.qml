@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
-import Qt.labs.platform 1.0
 import theme
 
 Window {
@@ -14,12 +13,14 @@ Window {
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
     color: "#00000000"
 
+    // The shell script will inject the JSON data here
     property var allApps: []
+    property string appsJsonPath: "%%APPS_JSON_PATH%%"
 
     // --- Functions ---
     function readAppsFromFile() {
         var xhr = new XMLHttpRequest();
-        var url = "file:///" + System.getenv("HOME") + "/.cache/quickshell_apps.json";
+        var url = appsJsonPath;
         xhr.open("GET", url, false); // Synchronous request
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && (xhr.status === 200 || xhr.status === 0)) {
@@ -68,7 +69,10 @@ Window {
             SearchBox {
                 id: searchBox
                 Layout.fillWidth: true
-                onAccepted: Qt.quit("SEARCH:" + text)
+                // When Enter is pressed, quit and output the search query.
+                onAccepted: {
+                    Qt.quit("SEARCH:" + text)
+                }
             }
 
             GridView {

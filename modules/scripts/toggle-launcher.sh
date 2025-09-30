@@ -66,11 +66,21 @@ else
     cp "$MASTER_APP_LIST" "$DISPLAY_APP_LIST"
 fi
 
-# Run the QML launcher and capture its output
+# Set the correct env var to allow file reading
+export QML_XHR_ALLOW_FILE_READ=1
 export QML_IMPORT_PATH="$HOME/.config/quickshell"
-export QML_XHR_ALLOW_FILE_READ=1 # CORRECT VARIABLE NAME
 log_msg "Starting launcher..."
-OUTPUT=$(quickshell -p "$QML_FILE" 2>> "$LOG_FILE")
+
+# Create a temporary QML file to inject the correct path
+TMP_QML_FILE="${QML_FILE}.tmp"
+APPS_JSON_PATH="file://$DISPLAY_APP_LIST"
+sed "s|%%APPS_JSON_PATH%%|$APPS_JSON_PATH|" "$QML_FILE" > "$TMP_QML_FILE"
+
+OUTPUT=$(quickshell -p "$TMP_QML_FILE" 2>> "$LOG_FILE")
+
+# Clean up
+rm "$TMP_QML_FILE"
+
 log_msg "Launcher output: '$OUTPUT'"
 
 # --- Handle Launcher Output ---
