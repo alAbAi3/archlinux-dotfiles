@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
 import "../theme"
-import "lib/fuzzysort.js" as FuzzySort
+import "../lib/fuzzysort.js" as FuzzySort
 
 Window {
     id: window
