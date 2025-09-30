@@ -1,7 +1,9 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
-import "../theme"
+import Qt.labs.platform 1.0
+import theme
+import "../lib/fuzzysort.js" as FuzzySort
 
 Window {
     id: window
@@ -18,13 +20,13 @@ Window {
     // --- Functions ---
     function readAppsFromFile() {
         var xhr = new XMLHttpRequest();
-        // The shell script will now always provide the model in this file
-        var url = "file:///" + Qt.getenv("HOME") + "/.cache/quickshell_apps.json";
+        // The script generates this file in the user's cache
+        var url = "file:///" + System.getenv("HOME") + "/.cache/quickshell_apps.json";
         xhr.open("GET", url, false); // Synchronous request
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 allApps = JSON.parse(xhr.responseText);
-                appGrid.model = allApps;
+                appGrid.model = allApps; // Set initial model
             }
         }
         xhr.send();
