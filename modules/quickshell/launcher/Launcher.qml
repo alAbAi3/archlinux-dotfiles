@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
 import "../theme"
-import "../lib/fuzzysort.js" as FuzzySort
 
 Window {
     id: window
@@ -19,28 +18,16 @@ Window {
     // --- Functions ---
     function readAppsFromFile() {
         var xhr = new XMLHttpRequest();
-        // The script generates this file in the user's cache
+        // The shell script will now always provide the model in this file
         var url = "file:///" + Qt.getenv("HOME") + "/.cache/quickshell_apps.json";
         xhr.open("GET", url, false); // Synchronous request
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 allApps = JSON.parse(xhr.responseText);
-                appGrid.model = allApps; // Set initial model
+                appGrid.model = allApps;
             }
         }
         xhr.send();
-    }
-
-    function performSearch(searchText) {
-        if (!searchText) {
-            appGrid.model = allApps; // Reset to full list if search is empty
-            return;
-        }
-        // Use the imported fuzzysort library
-        var results = FuzzySort.go(searchText, allApps, { key: 'name' });
-        // The result objects from fuzzysort have an 'obj' property with the original item
-        var filteredModel = results.map(function(res) { return res.obj; });
-        appGrid.model = filteredModel;
     }
 
     // --- Component Initialization ---
@@ -81,8 +68,10 @@ Window {
             SearchBox {
                 id: searchBox
                 Layout.fillWidth: true
-                // When text changes, call the search function
-                onTextChanged: performSearch(text)
+                // When Enter is pressed, quit and output the search query.
+                onAccepted: {
+                    Qt.quit("SEARCH:" + text)
+                }
             }
 
             GridView {
