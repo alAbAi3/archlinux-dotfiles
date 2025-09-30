@@ -98,15 +98,11 @@ link_dotfiles() {
     echo "  - Linking wallpapers directory..."
     ln -sf "$PROJECT_ROOT/wallpapers" "$HOME/Pictures/Wallpapers"
 
-    # Stow is still good for populating a bin directory
-    echo "  - Stowing scripts to ~/.local/bin..."
-    if ! command -v stow &> /dev/null; then
-        echo "  - ERROR: 'stow' is not installed. Please install it with 'sudo pacman -S stow'."
-        return 1
-    fi
-    pushd "$PROJECT_ROOT/modules" > /dev/null
-    stow -v --restow --target="$HOME/.local/bin" scripts
-    popd > /dev/null
+    # Link all scripts individually to ~/.local/bin for reliability
+    echo "  - Linking scripts to ~/.local/bin..."
+    for script in "$PROJECT_ROOT/modules/scripts/"*.sh; do
+        ln -sf "$script" "$HOME/.local/bin/"
+    done
 
     echo "  - Linking complete."
 }

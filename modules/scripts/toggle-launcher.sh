@@ -12,20 +12,35 @@
 generate_app_list() {
     log_msg "Generating app list..."
     local app_list_json="$HOME/.cache/quickshell_apps.json"
-    
-    # Find all .desktop files, excluding those that shouldn't be shown
-    find /usr/share/applications ~/.local/share/applications -name "*.desktop" -print0 |
-    xargs -0 awk -F'=' '
-        /^Name=/ {name=$2}
-        /^Icon=/ {icon=$2}
-        /^Exec=/ {
-            exec_cmd=$2;
-            gsub(/%[a-zA-Z]/, "", exec_cmd); # Remove placeholders like %U, %F
-            print "{"name":"" name "","icon":"" (icon ? icon : "application-x-executable") "","command":"" exec_cmd ""}"
-        }
-        /^NoDisplay=true/ {exit} # Skip entries that shouldn't be displayed
-    ' |
-    jq -s '.' > "$app_list_json"
+    local temp_json_list=$(mktemp)
+
+    # Find all .desktop files
+    find /usr/share/applications ~/.local/share/applications -name "*.desktop" |
+    while read -r file; do
+        # Skip entries that shouldn't be displayed
+        if grep -q "NoDisplay=true" "$file"; then
+            continue
+        fi
+
+        # Extract info using grep and sed for robustness
+        name=$(grep -m 1 "^Name=" "$file" | sed 's/^Name=//')
+        exec_cmd=$(grep -m 1 "^Exec=" "$file" | sed 's/^Exec=//' | sed 's/ %.*//')
+        icon=$(grep -m 1 "^Icon=" "$file" | sed 's/^Icon=//')
+
+        # Only add if name and command are present
+        if [ -n "$name" ] && [ -n "$exec_cmd" ]; then
+            # Use jq to safely build the JSON object for each entry
+            jq -n \
+               --arg name "$name" \
+               --arg icon "${icon:-application-x-executable}" \
+               --arg command "$exec_cmd" \
+               '{name: $name, icon: $icon, command: $command}' >> "$temp_json_list"
+        fi
+    done
+
+    # Combine all the JSON objects into a single JSON array
+    jq -s '.' "$temp_json_list" > "$app_list_json"
+    rm "$temp_json_list"
 
     log_msg "App list generated at $app_list_json"
 }
