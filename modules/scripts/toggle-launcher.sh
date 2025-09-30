@@ -7,7 +7,34 @@
 # Assuming this script will be symlinked to ~/.local/bin, and the lib is in ~/.config
 . "$HOME/.config/quickshell/lib/logging.sh"
 
+# --- App List Generation ---
+# Scan for .desktop files and generate a JSON list for the QML to read.
+generate_app_list() {
+    log_msg "Generating app list..."
+    local app_list_json="$HOME/.cache/quickshell_apps.json"
+    
+    # Find all .desktop files, excluding those that shouldn't be shown
+    find /usr/share/applications ~/.local/share/applications -name "*.desktop" -print0 |
+    xargs -0 awk -F'=' '
+        /^Name=/ {name=$2}
+        /^Icon=/ {icon=$2}
+        /^Exec=/ {
+            exec_cmd=$2;
+            gsub(/%[a-zA-Z]/, "", exec_cmd); # Remove placeholders like %U, %F
+            print "{"name":"" name "","icon":"" (icon ? icon : "application-x-executable") "","command":"" exec_cmd ""}"
+        }
+        /^NoDisplay=true/ {exit} # Skip entries that shouldn't be displayed
+    ' |
+    jq -s '.' > "$app_list_json"
+
+    log_msg "App list generated at $app_list_json"
+}
+
+
 log_msg "--- Script Start ---"
+
+# Generate the app list on every run to keep it fresh
+generate_app_list
 
 QML_FILE="$HOME/.config/quickshell/launcher/Launcher.qml"
 PROCESS_PATTERN="quickshell.*launcher/Launcher.qml"

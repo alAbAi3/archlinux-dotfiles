@@ -1,7 +1,7 @@
 
 // modules/quickshell/launcher/AppDelegate.qml
 import QtQuick
-import "file:///home/alibek/.config/quickshell/theme"
+import "../theme"
 
 Rectangle {
     id: delegateRoot

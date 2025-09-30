@@ -1,12 +1,12 @@
 import QtQuick
 import QtQuick.Layouts
-import "file:///home/alibek/.config/quickshell/theme"
+import "../theme"
 
-// Panel.qml
+// Taskbar.qml
 // This component is the top bar, containing the workspaces and clock.
 
 Rectangle {
-    id: panel
+    id: taskbar
     // The width will be set by the parent (the main shell.qml)
     height: 40
     
@@ -25,36 +25,15 @@ Rectangle {
         }
     }
 
-    // --- Main Panel UI ---
+    // --- Main Taskbar UI ---
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: 10
         anchors.rightMargin: 10
 
         // --- Workspace Buttons ---
-        RowLayout {
+        Workspaces {
             id: workspaceList
-            spacing: 5
-            Layout.alignment: Qt.AlignVCenter
-
-            Repeater {
-                model: 8
-                delegate: Rectangle {
-                    width: 30
-                    height: 30
-                    color: index === 0 ? Colors.color5 : "transparent"
-                    radius: 5
-                    border.color: Colors.color4
-                    border.width: 1
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: index + 1
-                        color: Colors.foreground
-                        font.bold: true
-                    }
-                }
-            }
         }
 
         Item {

@@ -1,16 +1,16 @@
 import QtQuick
 import QtQuick.Window
-import "panel"
+import "taskbar"
 
 // shell.qml (main)
-// This is the root of the UI. It assembles the Panel component.
+// This is the root of the UI. It assembles the Taskbar component.
 
 Window {
     id: root
     width: Screen.width
     height: Screen.height
     visible: true
-    title: "QuickShell-Panel"
+    title: "QuickShell-Taskbar"
 
     // Set window flags for a panel/dock type application
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
@@ -20,9 +20,9 @@ Window {
         width: root.width
         height: root.height
 
-        // Instantiate the Panel component.
-        Panel {
-            id: panel
+        // Instantiate the Taskbar component.
+        Taskbar {
+            id: taskbar
             // Anchor it to the top of the screen.
             anchors.top: parent.top
             // Make it as wide as the screen.
