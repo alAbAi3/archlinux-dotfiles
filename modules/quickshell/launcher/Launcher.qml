@@ -20,7 +20,6 @@ Window {
     // --- Functions ---
     function readAppsFromFile() {
         var xhr = new XMLHttpRequest();
-        // The script generates this file in the user's cache
         var url = "file:///" + System.getenv("HOME") + "/.cache/quickshell_apps.json";
         xhr.open("GET", url, false); // Synchronous request
         xhr.onreadystatechange = function() {
@@ -30,6 +29,18 @@ Window {
             }
         }
         xhr.send();
+    }
+
+    function performSearch(searchText) {
+        if (!searchText) {
+            appGrid.model = allApps; // Reset to full list if search is empty
+            return;
+        }
+        // Use the imported fuzzysort library
+        var results = FuzzySort.go(searchText, allApps, { key: 'name' });
+        // The result objects from fuzzysort have an 'obj' property with the original item
+        var filteredModel = results.map(function(res) { return res.obj; });
+        appGrid.model = filteredModel;
     }
 
     // --- Component Initialization ---
@@ -70,10 +81,8 @@ Window {
             SearchBox {
                 id: searchBox
                 Layout.fillWidth: true
-                // When Enter is pressed, quit and output the search query.
-                onAccepted: {
-                    Qt.quit("SEARCH:" + text)
-                }
+                // When text changes, call the search function for live filtering
+                onTextChanged: performSearch(text)
             }
 
             GridView {
