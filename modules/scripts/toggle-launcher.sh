@@ -66,10 +66,8 @@ if pgrep -f "$PROCESS_PATTERN" > /dev/null; then
     exit 0
 fi
 
-# Ensure master list exists
-if [ ! -f "$MASTER_APP_LIST" ]; then
-    generate_master_app_list
-fi
+# Ensure the master list is always up-to-date
+generate_master_app_list
 
 # Filter the list based on search query ($1)
 SEARCH_QUERY=$1
