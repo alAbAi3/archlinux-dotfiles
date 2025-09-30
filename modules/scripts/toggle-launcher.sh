@@ -81,14 +81,14 @@ fi
 
 # Run the QML launcher and capture its output
 export QML_IMPORT_PATH="$HOME/.config/quickshell"
-export QML_XHR_ALLOW_FILE_TO_READ=1 # Allow reading local files
 log_msg "Starting launcher..."
 
 # Create a temporary QML file in the same directory to preserve relative paths
 TMP_QML_FILE="${QML_FILE}.tmp"
-APPS_JSON_PATH="file://$DISPLAY_APP_LIST"
-# Use a different delimiter for sed because the path contains slashes
-sed "s|%%APPS_JSON_PATH%%|$APPS_JSON_PATH|" "$QML_FILE" > "$TMP_QML_FILE"
+
+# Read the JSON data and inject it directly into the QML file
+APPS_JSON_DATA=$(cat "$DISPLAY_APP_LIST")
+sed "s|%%APPS_JSON_DATA%%|$APPS_JSON_DATA|" "$QML_FILE" > "$TMP_QML_FILE"
 
 OUTPUT=$(quickshell -p "$TMP_QML_FILE" 2>> "$LOG_FILE")
 

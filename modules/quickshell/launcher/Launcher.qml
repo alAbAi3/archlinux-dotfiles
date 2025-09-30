@@ -14,26 +14,12 @@ Window {
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
     color: "#00000000"
 
-    property var allApps: []
-
-    // --- Functions ---
-    function readAppsFromFile() {
-        var xhr = new XMLHttpRequest();
-        // The shell script will now always provide the model in this file
-        var url = "%%APPS_JSON_PATH%%";
-        xhr.open("GET", url, false); // Synchronous request
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                allApps = JSON.parse(xhr.responseText);
-                appGrid.model = allApps;
-            }
-        }
-        xhr.send();
-    }
+    // The shell script will inject the JSON data here
+    property var allApps: %%APPS_JSON_DATA%%
 
     // --- Component Initialization ---
     Component.onCompleted: {
-        readAppsFromFile();
+        appGrid.model = allApps;
         searchBox.input.forceActiveFocus(); // Focus the search box on open
     }
 
@@ -75,17 +61,18 @@ Window {
                 }
             }
 
-            ListView {
+            GridView {
                 id: appGrid
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                model: allApps // The model is set from readAppsFromFile
-
-                delegate: Text {
-                    // Display the 'name' property of each object in the model
-                    text: modelData.name
-                    color: "white" // Use a hardcoded color to rule out theme issues
-                    font.pixelSize: 16
+                cellWidth: 130
+                cellHeight: 120
+                
+                delegate: AppDelegate {
+                    appName: modelData.name
+                    // Use first letter of name as a fallback icon
+                    appIcon: modelData.name ? modelData.name.substring(0, 1) : "?"
+                    appCommand: modelData.command
                 }
             }
         }
