@@ -20,7 +20,7 @@ Window {
     function readAppsFromFile() {
         var xhr = new XMLHttpRequest();
         // The shell script will now always provide the model in this file
-        var url = "file:///" + System.getenv("HOME") + "/.cache/quickshell_apps.json";
+        var url = "%%APPS_JSON_PATH%%";
         xhr.open("GET", url, false); // Synchronous request
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
