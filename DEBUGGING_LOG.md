@@ -88,3 +88,42 @@ This phase involved implementing the application launcher, which surfaced a comp
 ## Final Status: Phase 1 Complete
 
 All launcher-related issues have been resolved. The project now has a functional, refactored panel and a robust, floating application launcher, successfully completing the goals of **Phase 1**.
+
+---
+
+## Problem 7: Stabilizing the Launcher & UI
+
+This phase focused on refactoring the codebase, implementing a functional search, and addressing display scaling issues. It involved a long and iterative debugging process that revealed several deep-seated issues in the QML environment.
+
+*   **Sub-Problem: General Refactoring & Theming**
+    1.  **Symptom:** The UI components for the top bar were generically named `Panel`.
+    2.  **Solution:** All relevant files and code references were renamed from `Panel` to `Taskbar` for clarity (e.g., `Panel.qml` → `Taskbar.qml`, window title `QuickShell-Panel` → `QuickShell-Taskbar`).
+    3.  **Symptom:** The launcher and taskbar were not obeying the theme colors.
+    4.  **Investigation:** The `import "../theme"` statement in the QML components was using a relative path. However, the theme is defined as a `singleton` in its `qmldir` file, which requires a module import.
+    5.  **Solution:** The imports were corrected to `import theme`, which properly loads the `Colors` singleton.
+
+*   **Sub-Problem: The Fuzzy Search Saga**
+    1.  **Goal:** Implement a live, fuzzy search for the application launcher.
+    2.  **Initial Approach:** A JavaScript-based approach was implemented. `toggle-launcher.sh` would generate a master list of apps, and `Launcher.qml` would import the `fuzzysort.js` library to filter this list live as the user typed.
+    3.  **Symptom:** This immediately brought back the `Script qrc:/qs-blackhole unavailable` error that was mentioned in the original project logs. 
+    4.  **Investigation:** A series of attempts were made to fix the JavaScript import, including different relative paths and using a `qmldir` file in the `lib/` directory. Every attempt failed, either with the `qs-blackhole` error or a `File not found` error. The conclusion was that the minified, UMD-wrapped `fuzzysort.js` library was fundamentally incompatible with the QuickShell QML engine.
+    5.  **Pivot to Shell-Based Search:** The decision was made to abandon the JavaScript approach and implement a more robust, if less interactive, search in the shell script, aligning with the project's established patterns.
+
+*   **Sub-Problem: The "Empty Launcher" Mystery**
+    This describes the series of bugs encountered while implementing the shell-based search.
+    1.  **Symptom:** The launcher would open, but the view was completely empty. No apps were displayed.
+    2.  **Investigation & Solutions:**
+        *   **`onAccepted` Error:** The shell-based search required the QML to quit and return a value when `Enter` was pressed. This was implemented with an `onAccepted` handler on the `SearchBox` component, which failed because the custom `SearchBox` component didn't expose the signal. This was fixed by properly defining and emitting the `accepted()` signal within `SearchBox.qml`.
+        *   **`System is not defined` Error:** The QML code used `System.getenv("HOME")` to locate the `apps.json` file. This failed because the necessary QML module, `Qt.labs.platform`, was not installed. While the package (`qt6-declarative`) was identified, the error persisted, indicating a deeper environment issue.
+        *   **`QML_XHR_ALLOW_FILE_READ` Error:** The `XMLHttpRequest` used to read the local JSON file was being blocked by default for security. The user discovered that the correct environment variable to enable it was `QML_XHR_ALLOW_FILE_READ=1`, correcting a typo in the variable name that had been used previously.
+        *   **Final Solution (The `sed` Workaround):** To permanently fix the `System is not defined` and file-read errors, the code was refactored to avoid reading the file from QML altogether. The `toggle-launcher.sh` script now reads the `apps.json` file and uses `sed` to inject the JSON data directly into a temporary QML file before execution. This proved to be the most stable solution.
+
+*   **Sub-Problem: HiDPI Display Scaling**
+    1.  **Symptom:** On a high-resolution 16:10 display, the taskbar, terminal, and other UI elements appeared too small.
+    2.  **Solution:** The `monitor` configuration in `hyprland.conf` was updated with a scaling factor of `1.25` (`monitor=,preferred,auto,1.25`) to uniformly scale the entire desktop environment.
+
+---
+
+## Final Status: Launcher Stable
+
+After extensive debugging, the launcher is now fully functional and stable. It uses a robust shell-based search and data injection method that avoids the previous environment and QML API issues. The UI is also now correctly scaled for high-resolution displays.
