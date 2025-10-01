@@ -18,34 +18,21 @@ Rectangle {
 
     // --- Function to load and parse state ---
     function loadState() {
-        var xhr = new XMLHttpRequest();
         var url = "file:///home/alibek/.cache/rice/workspace_state.json";
-        xhr.open("GET", url, true);
+        try {
+            // Use a simpler, synchronous file read.
+            var fileContent = Qt.readUrl(url);
 
-        xhr.onreadystatechange = function() {
-            // Log all state changes for debugging
-            // console.log("XHR readyState: " + xhr.readyState + " Status: " + xhr.status)
-
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200 || xhr.status === 0) { // Status 0 is for local files
-                    if (xhr.responseText) {
-                        // console.log("XHR responseText length: " + xhr.responseText.length)
-                        try {
-                            var state = JSON.parse(xhr.responseText);
-                            taskbar.activeWorkspace = state.active;
-                            taskbar.workspaceModel = state.workspaces;
-                        } catch (e) {
-                            console.log("!!! QML PARSE ERROR: " + e.toString() + " | In file: " + xhr.responseText)
-                        }
-                    } else {
-                        console.log("!!! QML FILE READ WARNING: File is empty.")
-                    }
-                } else {
-                    console.log("!!! QML FILE READ ERROR: Status was " + xhr.status)
-                }
+            if (fileContent) {
+                var state = JSON.parse(fileContent);
+                taskbar.activeWorkspace = state.active;
+                taskbar.workspaceModel = state.workspaces;
+            } else {
+                console.log("!!! QML READ WARNING: File is empty or could not be read.")
             }
+        } catch (e) {
+            console.log("!!! QML PARSE/READ ERROR: " + e.toString());
         }
-        xhr.send();
     }
 
     // --- Initial Load ---
