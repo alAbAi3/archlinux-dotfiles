@@ -127,3 +127,51 @@ This phase focused on refactoring the codebase, implementing a functional search
 ## Final Status: Launcher Stable
 
 After extensive debugging, the launcher is now fully functional and stable. It uses a robust shell-based search and data injection method that avoids the previous environment and QML API issues. The UI is also now correctly scaled for high-resolution displays.
+
+---
+
+## Problem 8: The Quest for a Dynamic Workspace Indicator
+
+This phase documents the long and iterative process of making the taskbar's workspace indicator dynamic. The goal was to have the UI reflect the currently active workspace. This seemingly simple task exposed the most difficult environmental constraints of the project, leading to multiple failed architectural attempts before a final, stable solution was found.
+
+*   **Initial State:** The taskbar showed a static list of workspaces that did not respond to user actions.
+
+### Attempt 1: The `FileSystemWatcher` (The Logical Start)
+
+*   **Architecture:** A `ws-listener.sh` script would listen to Hyprland events and write the current workspace state to a JSON file. A `FileSystemWatcher` component in QML would watch this file and trigger a UI update on any change.
+*   **Result:** This failed immediately. The logs showed `FileSystemWatcher is not a type`.
+*   **Conclusion:** This provided the first major clue: standard QML modules that interact with the filesystem were not available or not being found in the QuickShell environment.
+
+### Attempt 2: The D-Bus Service (The "Proper" IPC Approach)
+
+*   **Architecture:** If file I/O is broken, use a proper Inter-Process Communication (IPC) system. The plan was to turn `Taskbar.qml` into a D-Bus service by importing `QtDBus` and exposing an `updateState()` method. The `ws-listener.sh` script would then use the `qdbus` command-line tool to call this method, pushing updates directly to the running QML process.
+*   **Result:** This also failed immediately. The logs showed `Module QtDBus is not installed`.
+*   **Conclusion:** After attempting to fix this by installing related packages (`qt6-dbus`, `qt6-base`) and setting environment variables (`QML2_IMPORT_PATH`), the user provided the critical piece of information: **The QML module for QtDBus does not exist in Qt6.** It was a feature of Qt5 that was deprecated. This entire architectural path was a dead end from the start.
+
+### Attempt 3: The "Micro-Component" (The Shell-Driven Approach)
+
+*   **Architecture:** Based on the successful `sed`-injection pattern from the launcher, this approach treated the workspace indicator as its own tiny, separate QML application. The `ws-listener.sh` script became an orchestrator: on every workspace event, it would inject the new state into a QML template, `pkill` the old indicator process, and launch a new one. A `windowrulev2` in `hyprland.conf` would pin the tiny window to the correct location.
+*   **Result:** This also failed, but more subtly. Only the first indicator appeared, and it never updated, suggesting the `pkill`/re-launch cycle was failing after the first run.
+*   **Conclusion:** While built on proven patterns, this architecture was complex and its failure point wasn't obvious. The user requested a simpler approach.
+
+### Attempt 4: The Simplified Polling Model (The Final Architecture)
+
+This approach was born from the user's request to simplify the requirements: have a fixed number of 5 workspaces and just highlight the active one.
+
+*   **Architecture: "Keybind-Driven State"**
+    1.  **State Source:** The concept of a background listener was abandoned. The user's keypresses became the source of truth. A helper script, `go-to-ws.sh`, is called by all workspace-switching keybinds. This script both dispatches the workspace change to Hyprland and writes the new active workspace ID to a simple text file: `~/.cache/rice/active_workspace.txt`.
+    2.  **UI:** The `Taskbar.qml` component polls this simple text file on a timer.
+    3.  **The Breakthrough:** The initial implementation of this polling failed. The user correctly identified that we needed to use `XMLHttpRequest` and, crucially, that the `QML_XHR_ALLOW_FILE_READ=1` environment variable must be set in `hyprland.conf` for it to work. My previous attempts had either used the wrong function (`Qt.readUrl`, which doesn't exist) or had the wrong environment variable set.
+
+*   **The Fix that Tied It All Together:**
+    1.  The `go-to-ws.sh` script was created to centralize the state-updating logic.
+    2.  All workspace keybinds in `hyprland.conf` were updated to call this script.
+    3.  The `Taskbar.qml` was implemented with a `Timer` that calls a `loadState()` function.
+    4.  The `loadState()` function was correctly implemented using `XMLHttpRequest`.
+    5.  The `env = QML_XHR_ALLOW_FILE_READ,1` line was correctly set in `hyprland.conf`.
+
+--- 
+
+## Final Status: Taskbar Stable
+
+After a long and difficult debugging process that uncovered fundamental limitations in the QML environment, a simple and robust solution was found. The final "Keybind-Driven" architecture is reliable because it minimizes complexity, removes the need for background listeners, and correctly uses the one QML I/O feature (`XMLHttpRequest`) that we were able to enable. The taskbar now correctly displays 5 workspaces and highlights the active one in real-time.
