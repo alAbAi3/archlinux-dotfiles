@@ -1,0 +1,3 @@
+module launcher
+AppDelegate AppDelegate.qml
+SearchBox SearchBox.qml
