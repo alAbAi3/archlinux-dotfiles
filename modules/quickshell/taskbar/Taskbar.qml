@@ -24,10 +24,13 @@ Rectangle {
                 var newActive = parseInt(fileContent.trim(), 10);
                 if (taskbar.activeWorkspace !== newActive) {
                     taskbar.activeWorkspace = newActive;
+                    // console.log("QML State: Successfully updated active workspace to " + newActive)
                 }
+            } else {
+                // This might be expected if the file is temporarily empty
             }
         } catch (e) {
-            // Fail silently, the timer will try again
+            console.log("!!! QML FILE READ/PARSE ERROR: " + e.toString());
         }
     }
 
