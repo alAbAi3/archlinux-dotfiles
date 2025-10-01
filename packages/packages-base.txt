@@ -11,3 +11,4 @@ ttf-font-awesome
 ttf-dejavu
 jq
 qt6-declarative
+qt6-tools

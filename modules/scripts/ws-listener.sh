@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# ws-listener.sh (v2 - Dynamic)
-# Listens to Hyprland socket2 events and updates a state file
-# with the current workspace status.
+# ws-listener.sh (v3 - D-Bus)
+# Listens to Hyprland socket2 events and pushes state updates to the
+# running Taskbar component via D-Bus.
 
 # --- Source Logging Library ---
 if [ -f "$HOME/.config/quickshell/lib/logging.sh" ]; then
@@ -11,25 +11,24 @@ else
     log_msg() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] [ws-listener] $1"; }
 fi
 
-# --- Configuration ---
-STATE_FILE="$HOME/.cache/rice/workspace_state.json"
+# --- D-Bus Configuration ---
+DBUS_SERVICE="org.rice.QuickShell"
+DBUS_PATH="/Taskbar"
+DBUS_IFACE="org.rice.QuickShell.Taskbar"
+DBUS_METHOD="updateState"
 
 # --- State Update Function ---
 update_state() {
-    log_msg "Updating workspace state..."
+    log_msg "Updating workspace state via D-Bus..."
     
-    # Get active workspace and all workspaces in one call, then format
     active_ws_id=$(hyprctl activeworkspace -j | jq '.id')
     workspaces_json=$(hyprctl workspaces -j | jq 'sort_by(.id) | .[] | {id: .id, windows: .windows}' | jq -s)
 
-    # Combine into the final JSON structure
     final_json=$(jq -n --argjson active "$active_ws_id" --argjson workspaces "$workspaces_json" '{active: $active, workspaces: $workspaces}')
 
-    # Write to state file atomically
-    echo "$final_json" > "$STATE_FILE.tmp"
-    mv "$STATE_FILE.tmp" "$STATE_FILE"
-
-    log_msg "State updated. Active: $active_ws_id"
+    # Push the state to the QML component via D-Bus
+    qdbus "$DBUS_SERVICE" "$DBUS_PATH" "$DBUS_IFACE.$DBUS_METHOD" "$final_json"
+    log_msg "D-Bus signal sent. Active: $active_ws_id"
 }
 
 # --- Main ---

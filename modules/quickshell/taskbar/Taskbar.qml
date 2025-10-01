@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtDBus 1.0
 import "../theme"
 
 // Taskbar.qml
@@ -12,42 +13,38 @@ Rectangle {
     border.color: Colors.color8
     border.width: 1
 
-    // --- State Properties ---
-    property int activeWorkspace: 1
-    property var workspaceModel: []
+    // --- D-Bus Service Adaptor ---
+    // Registers this component on D-Bus so shell scripts can call its methods.
+    DBusAdaptor {
+        id: dbusAdaptor
+        service: "org.rice.QuickShell"
+        iface: "org.rice.QuickShell.Taskbar"
+        path: "/Taskbar"
 
-    // --- Function to load and parse state ---
-    function loadState() {
-        var url = "file:///home/alibek/.cache/rice/workspace_state.json";
-        try {
-            // Use a simpler, synchronous file read.
-            var fileContent = Qt.readUrl(url);
-
-            if (fileContent) {
-                var state = JSON.parse(fileContent);
+        // This function can be called from the command line via qdbus.
+        // It expects a single string argument containing the JSON data.
+        Q_NOREPLY function updateState(jsonString) {
+            try {
+                var state = JSON.parse(jsonString);
                 taskbar.activeWorkspace = state.active;
                 taskbar.workspaceModel = state.workspaces;
-            } else {
-                console.log("!!! QML READ WARNING: File is empty or could not be read.")
+            } catch (e) {
+                console.log("!!! QML D-Bus PARSE ERROR: " + e.toString())
             }
-        } catch (e) {
-            console.log("!!! QML PARSE/READ ERROR: " + e.toString());
         }
     }
 
-    // --- Initial Load ---
-    Component.onCompleted: {
-        loadState()
-    }
+    // --- State Properties ---
+    property int activeWorkspace: 1
+    property var workspaceModel: [{ "id": 1, "windows": 0 }] // Start with one workspace
 
-    // --- Timer for Clock and State Polling ---
+    // --- Timer for Clock ---
     Timer {
         interval: 1000 // 1 second
         running: true
         repeat: true
         onTriggered: {
             clockText.text = Qt.formatDateTime(new Date(), "h:mm AP")
-            loadState() // Poll for workspace state changes
         }
     }
 
@@ -57,10 +54,8 @@ Rectangle {
         anchors.leftMargin: 10
         anchors.rightMargin: 10
 
-        // --- Workspace Buttons ---
         Workspaces {
             id: workspaceList
-            // Pass the model and active state down to the child component
             active: taskbar.activeWorkspace
             model: taskbar.workspaceModel
         }
@@ -69,7 +64,6 @@ Rectangle {
             Layout.fillWidth: true
         }
 
-        // --- Clock ---
         Text {
             id: clockText
             text: Qt.formatDateTime(new Date(), "h:mm AP")
