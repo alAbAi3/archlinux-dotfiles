@@ -21,16 +21,27 @@ Rectangle {
         var xhr = new XMLHttpRequest();
         var url = "file:///home/alibek/.cache/rice/workspace_state.json";
         xhr.open("GET", url, true);
+
         xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE && (xhr.status === 200 || xhr.status === 0)) {
-                if (xhr.responseText) {
-                    try {
-                        var state = JSON.parse(xhr.responseText);
-                        taskbar.activeWorkspace = state.active;
-                        taskbar.workspaceModel = state.workspaces;
-                    } catch (e) {
-                        // Suppress frequent parsing errors if file is being written
+            // Log all state changes for debugging
+            // console.log("XHR readyState: " + xhr.readyState + " Status: " + xhr.status)
+
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200 || xhr.status === 0) { // Status 0 is for local files
+                    if (xhr.responseText) {
+                        // console.log("XHR responseText length: " + xhr.responseText.length)
+                        try {
+                            var state = JSON.parse(xhr.responseText);
+                            taskbar.activeWorkspace = state.active;
+                            taskbar.workspaceModel = state.workspaces;
+                        } catch (e) {
+                            console.log("!!! QML PARSE ERROR: " + e.toString() + " | In file: " + xhr.responseText)
+                        }
+                    } else {
+                        console.log("!!! QML FILE READ WARNING: File is empty.")
                     }
+                } else {
+                    console.log("!!! QML FILE READ ERROR: Status was " + xhr.status)
                 }
             }
         }
