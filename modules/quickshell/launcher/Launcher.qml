@@ -13,31 +13,12 @@ Window {
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
     color: "#00000000"
 
-    property var allApps: []
+    property var allApps: __APPS_JSON__
     property string filterText: ""
-
-    // --- Functions ---
-    function readAppsFromFile() {
-        var xhr = new XMLHttpRequest();
-        // Use a fixed, predictable path. The toggle script is responsible for creating this file.
-        var url = "file://" + Qt.getenv("HOME") + "/.cache/quickshell/apps.json";
-        xhr.open("GET", url, false); // Synchronous request
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE && (xhr.status === 200 || xhr.status === 0)) {
-                try {
-                    allApps = JSON.parse(xhr.responseText);
-                    appGrid.model = allApps;
-                } catch (e) {
-                    console.log("JSON Parse Error: " + e);
-                }
-            }
-        }
-        xhr.send();
-    }
 
     // --- Component Initialization ---
     Component.onCompleted: {
-        readAppsFromFile();
+        appGrid.model = allApps;
         searchBox.input.forceActiveFocus(); // Focus the search box on open
     }
 

@@ -6,7 +6,8 @@
 CACHE_DIR="$HOME/.cache/quickshell"
 APPS_JSON_FILE="$CACHE_DIR/apps.json"
 QML_FILE="$HOME/.config/quickshell/launcher/Launcher.qml"
-PROCESS_PATTERN="quickshell.*launcher/Launcher.qml"
+TEMP_QML_FILE="$CACHE_DIR/launcher.qml"
+PROCESS_PATTERN="quickshell.*launcher.qml"
 LOG_FILE="$CACHE_DIR/launcher.log"
 
 # --- Setup ---
@@ -58,12 +59,19 @@ fi
 # Generate a fresh app list.
 _generate_app_list
 
+# Inject the JSON data into the QML file.
+log "Injecting app data into QML template."
+JSON_CONTENT=$(<"$APPS_JSON_FILE")
+sed "s|__APPS_JSON__|${JSON_CONTENT}|" "$QML_FILE" > "$TEMP_QML_FILE"
+log "Temporary QML file created at ${TEMP_QML_FILE}"
+
+
 # Set necessary environment variables for QML
 export QML_XHR_ALLOW_FILE_READ=1
 export QML_IMPORT_PATH="$HOME/.config/quickshell"
 
 log "Starting launcher..."
-OUTPUT=$(quickshell -p "$QML_FILE" 2>> "$LOG_FILE")
+OUTPUT=$(quickshell -p "$TEMP_QML_FILE" 2>> "$LOG_FILE")
 log "Launcher output: '$OUTPUT'"
 
 # --- Handle Launcher Output ---
