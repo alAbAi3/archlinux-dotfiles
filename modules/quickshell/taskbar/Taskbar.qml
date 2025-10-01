@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../theme"
-import "widgets/ClockWidget.qml"
+import "widgets"
 
 // Taskbar.qml
 // This component is the top bar, which assembles other widgets.
