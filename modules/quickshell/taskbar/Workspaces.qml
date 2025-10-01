@@ -1,16 +1,15 @@
 import QtQuick
 import QtQuick.Layouts
-import "../theme"
 
 // Workspaces.qml
-// This component displays the workspace buttons dynamically.
+// This component displays the workspace indicators as circles.
 
 RowLayout {
     id: workspaceList
-    spacing: 5
+    spacing: 8 // Add some space between the circles
     Layout.alignment: Qt.AlignVCenter
 
-    // These properties are now set by the parent component (Taskbar.qml)
+    // These properties are set by the parent component (Taskbar.qml)
     property int active: 1
     property var model: []
 
@@ -18,21 +17,12 @@ RowLayout {
     Repeater {
         model: workspaceList.model
         delegate: Rectangle {
-            width: 30
-            height: 30
+            width: 12
+            height: 12
             
-            // Style based on workspace state passed from parent
-            color: modelData.id === workspaceList.active ? Colors.color5 : "transparent"
-            radius: 5
-            border.color: Colors.color4
-            border.width: 1
-
-            Text {
-                anchors.centerIn: parent
-                text: modelData.id
-                color: Colors.foreground
-                font.bold: true
-            }
+            // Style as a circle, color depends on active state.
+            radius: 6
+            color: modelData.id === workspaceList.active ? "lightgray" : "#444444" // Using a specific dark gray
 
             MouseArea {
                 anchors.fill: parent

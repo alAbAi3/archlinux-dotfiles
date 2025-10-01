@@ -25,8 +25,10 @@ update_state() {
     # Combine into the final JSON structure
     final_json=$(jq -n --argjson active "$active_ws_id" --argjson workspaces "$workspaces_json" '{active: $active, workspaces: $workspaces}')
 
-    # Write to state file
-    echo "$final_json" > "$STATE_FILE"
+    # Write to state file atomically
+    echo "$final_json" > "$STATE_FILE.tmp"
+    mv "$STATE_FILE.tmp" "$STATE_FILE"
+
     log_msg "State updated. Active: $active_ws_id"
 }
 

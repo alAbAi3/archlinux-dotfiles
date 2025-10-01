@@ -12,19 +12,44 @@ Rectangle {
     border.color: Colors.color8
     border.width: 1
 
-    // --- DIANOSTIC: Hardcoded State Properties ---
-    property int activeWorkspace: 2 // Hardcoded to 2 for testing
-    property var workspaceModel: [ { "id": 1 }, { "id": 2 } ] // Hardcoded two workspaces
+    // --- State Properties ---
+    property int activeWorkspace: 1
+    property var workspaceModel: []
 
-    // --- Timer for Clock ---
+    // --- Function to load and parse state ---
+    function loadState() {
+        var xhr = new XMLHttpRequest();
+        var url = "file:///home/alibek/.cache/rice/workspace_state.json";
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && (xhr.status === 200 || xhr.status === 0)) {
+                if (xhr.responseText) {
+                    try {
+                        var state = JSON.parse(xhr.responseText);
+                        taskbar.activeWorkspace = state.active;
+                        taskbar.workspaceModel = state.workspaces;
+                    } catch (e) {
+                        // Suppress frequent parsing errors if file is being written
+                    }
+                }
+            }
+        }
+        xhr.send();
+    }
+
+    // --- Initial Load ---
+    Component.onCompleted: {
+        loadState()
+    }
+
+    // --- Timer for Clock and State Polling ---
     Timer {
         interval: 1000 // 1 second
         running: true
         repeat: true
         onTriggered: {
             clockText.text = Qt.formatDateTime(new Date(), "h:mm AP")
-            // Polling is temporarily disabled for diagnostics
-            // loadState()
+            loadState() // Poll for workspace state changes
         }
     }
 
