@@ -23,7 +23,7 @@ Rectangle {
 
         // This function can be called from the command line via qdbus.
         // It expects a single string argument containing the JSON data.
-        Q_NOREPLY function updateState(jsonString) {
+        function updateState(jsonString) {
             try {
                 var state = JSON.parse(jsonString);
                 taskbar.activeWorkspace = state.active;
