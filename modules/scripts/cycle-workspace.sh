@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # cycle-workspace.sh
-# Switches to the next workspace, wrapping around from 8 to 1.
+# Switches to the next workspace, wrapping around from 5 to 1.
 
 . "$HOME/.config/quickshell/lib/logging.sh"
 log_msg "--- Script Start: cycle-workspace.sh ---"
 
-MAX_WORKSPACES=8
+MAX_WORKSPACES=5
+HELPER_SCRIPT="$HOME/.local/bin/go-to-ws.sh"
 
 # Get the ID of the currently active workspace
 log_msg "Getting active workspace..."
@@ -22,7 +23,8 @@ if [ "$next_ws" -gt "$MAX_WORKSPACES" ]; then
     next_ws=1
 fi
 
-# Switch to the next workspace
-log_msg "Dispatching to workspace: $next_ws"
-hyprctl dispatch workspace "$next_ws"
+# Execute the helper script
+log_msg "Executing helper script for workspace: $next_ws"
+sh "$HELPER_SCRIPT" "$next_ws"
+
 log_msg "--- Script End: cycle-workspace.sh ---"

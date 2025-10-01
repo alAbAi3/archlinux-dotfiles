@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # previous-workspace.sh
-# Switches to the previous workspace, wrapping around from 1 to 8.
+# Switches to the previous workspace, wrapping around from 1 to 5.
 
 . "$HOME/.config/quickshell/lib/logging.sh"
 log_msg "--- Script Start: previous-workspace.sh ---"
 
-MAX_WORKSPACES=8
+MAX_WORKSPACES=5
+HELPER_SCRIPT="$HOME/.local/bin/go-to-ws.sh"
 
 # Get the ID of the currently active workspace
 log_msg "Getting active workspace..."
@@ -22,7 +23,8 @@ if [ "$prev_ws" -lt 1 ]; then
     prev_ws=$MAX_WORKSPACES
 fi
 
-# Switch to the previous workspace
-log_msg "Dispatching to workspace: $prev_ws"
-hyprctl dispatch workspace "$prev_ws"
+# Execute the helper script
+log_msg "Executing helper script for workspace: $prev_ws"
+sh "$HELPER_SCRIPT" "$prev_ws"
+
 log_msg "--- Script End: previous-workspace.sh ---"
