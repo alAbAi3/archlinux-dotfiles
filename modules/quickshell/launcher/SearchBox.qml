@@ -1,4 +1,3 @@
-
 // modules/quickshell/launcher/SearchBox.qml
 import QtQuick
 import theme
@@ -38,4 +37,9 @@ Rectangle {
             text: "Search apps..."
             color: Colors.color8
             font.pixelSize: 20
-
+            visible: !searchInput.text
+            anchors.fill: parent
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
+}
