@@ -69,7 +69,7 @@ _generate_app_list
 # Inject the JSON data into the QML file.
 log "[DEBUG] Injecting app data into QML template."
 JSON_CONTENT=$(<"$APPS_JSON_FILE")
-sed "s|__APPS_JSON__|${JSON_CONTENT}|" "$QML_FILE" > "$TEMP_QML_FILE"
+awk -v r="$(<"$APPS_JSON_FILE")" '{gsub(/__APPS_JSON__/, r)}1' "$QML_FILE" > "$TEMP_QML_FILE"
 log "[DEBUG] Temporary QML file created at ${TEMP_QML_FILE}"
 
 
