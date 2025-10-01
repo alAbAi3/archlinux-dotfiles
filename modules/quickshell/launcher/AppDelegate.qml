@@ -20,15 +20,15 @@ Rectangle {
         radius: 8
     }
 
-    Text {
-        id: appIconText
+    Image {
+        id: appIconImage
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 20
-        font.family: "monospace"
-        font.pixelSize: 40
-        text: appIcon
-        color: Colors.foreground
+        anchors.topMargin: 15
+        width: 48
+        height: 48
+        source: appIcon ? "image://theme/" + appIcon : ""
+        fillMode: Image.PreserveAspectFit
     }
 
     Text {

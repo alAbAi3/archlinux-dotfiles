@@ -1,105 +1,75 @@
-#!/bin/sh
+#!/bin/bash
 
-# This script toggles the launcher and handles search logic.
-
-. "$HOME/.config/quickshell/lib/logging.sh"
+# This script toggles the launcher.
 
 # --- Configuration ---
+CACHE_DIR="$HOME/.cache/quickshell"
+APPS_JSON_FILE="$CACHE_DIR/apps.json"
 QML_FILE="$HOME/.config/quickshell/launcher/Launcher.qml"
 PROCESS_PATTERN="quickshell.*launcher/Launcher.qml"
-MASTER_APP_LIST="$HOME/.cache/quickshell_master_apps.json"
-DISPLAY_APP_LIST="$HOME/.cache/quickshell_apps.json" # The file QML actually reads
+LOG_FILE="$CACHE_DIR/launcher.log"
+
+# --- Setup ---
+mkdir -p "$CACHE_DIR"
+
+# --- Logging ---
+log() {
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
 
 # --- App List Generation ---
-generate_master_app_list() {
-    log_msg "Generating master app list..."
-    local temp_json_list=$(mktemp)
+_generate_app_list() {
+    log "Generating app list..."
+    local app_dirs=("/usr/share/applications" "$HOME/.local/share/applications")
+    local temp_json=$(mktemp)
 
-    find /usr/share/applications ~/.local/share/applications -name "*.desktop" | while read -r file; do
-        if grep -q "NoDisplay=true" "$file"; then continue; fi
-        
-        name=$(grep -m 1 "^Name=" "$file" | sed 's/^Name=//')
-        exec_cmd=$(grep -m 1 "^Exec=" "$file" | sed 's/^Exec=//' | sed 's/ %.*//')
-        icon=$(grep -m 1 "^Icon=" "$file" | sed 's/^Icon=//')
+    for dir in "${app_dirs[@]}"; do
+        if [[ -d "$dir" ]]; then
+            grep -l -r --include='*.desktop' -E "^Name=|^Exec=|^Icon=" "$dir" | while read -r file; do
+                if grep -q "NoDisplay=true" "$file"; then continue; fi
 
-        if [ -n "$name" ] && [ -n "$exec_cmd" ]; then
-            jq -n \
-               --arg name "$name" \
-               --arg icon "${icon:-application-x-executable}" \
-               --arg command "$exec_cmd" \
-               '{name: $name, icon: $icon, command: $command}' >> "$temp_json_list"
+                local name=$(grep -m 1 "^Name=" "$file" | cut -d'=' -f2)
+                local exec_cmd=$(grep -m 1 "^Exec=" "$file" | cut -d'=' -f2 | sed 's/ %./ /g')
+                local icon=$(grep -m 1 "^Icon=" "$file" | cut -d'=' -f2)
+
+                if [[ -n "$name" && -n "$exec_cmd" ]]; then
+                    jq -n --arg name "$name" --arg icon "${icon:-application-x-executable}" --arg command "$exec_cmd" \
+                       '{name: $name, icon: $icon, command: $command}' >> "$temp_json"
+                fi
+            done
         fi
     done
 
-    if [ ! -s "$temp_json_list" ]; then
-        log_msg "WARN: Temp list is empty. No apps were successfully parsed."
-        echo "[]" > "$MASTER_APP_LIST"
-        rm "$temp_json_list"
-        return
-    fi
-
-    jq -s '.' "$temp_json_list" > "$MASTER_APP_LIST"
-    rm "$temp_json_list"
-    log_msg "Master app list generated successfully."
+    jq -s '.' "$temp_json" > "$APPS_JSON_FILE"
+    rm "$temp_json"
+    log "App list generation complete."
 }
 
 # --- Main Logic ---
-log_msg "--- Script Start ---"
+log "--- Script Start ---"
 
 # If launcher is running, kill it and exit.
 if pgrep -f "$PROCESS_PATTERN" > /dev/null; then
-    log_msg "Process found. Killing existing launcher."
+    log "Process found. Killing existing launcher."
     pkill -f "$PROCESS_PATTERN"
     exit 0
 fi
 
-# Always generate the master list to ensure it's fresh.
-generate_master_app_list
+# Generate a fresh app list.
+_generate_app_list
 
-# Filter the list based on search query ($1)
-SEARCH_QUERY=$1
-if [ -n "$SEARCH_QUERY" ]; then
-    log_msg "Filtering list with query: '$SEARCH_QUERY'"
-    jq --arg query "$SEARCH_QUERY" 'map(select(.name | test($query; "i")))' "$MASTER_APP_LIST" > "$DISPLAY_APP_LIST"
-else
-    log_msg "No search query. Using master list."
-    cp "$MASTER_APP_LIST" "$DISPLAY_APP_LIST"
-fi
-
-# Set the correct env var to allow file reading
+# Set necessary environment variables for QML
 export QML_XHR_ALLOW_FILE_READ=1
 export QML_IMPORT_PATH="$HOME/.config/quickshell"
-log_msg "Starting launcher..."
 
-# Create a temporary QML file to inject the correct path
-TMP_QML_FILE="${QML_FILE}.tmp"
-APPS_JSON_PATH="file://$DISPLAY_APP_LIST"
-sed "s|%%APPS_JSON_PATH%%|$APPS_JSON_PATH|" "$QML_FILE" > "$TMP_QML_FILE"
-
-OUTPUT=$(quickshell -p "$TMP_QML_FILE" 2>> "$LOG_FILE")
-
-# Clean up
-rm "$TMP_QML_FILE"
-
-log_msg "Launcher output: '$OUTPUT'"
+log "Starting launcher..."
+OUTPUT=$(quickshell -p "$QML_FILE" 2>> "$LOG_FILE")
+log "Launcher output: '$OUTPUT'"
 
 # --- Handle Launcher Output ---
-case "$OUTPUT" in
-    SEARCH:*) 
-        # Relaunch with the new search query
-        NEW_QUERY=$(echo "$OUTPUT" | sed 's/SEARCH://')
-        log_msg "Relaunching with new search: '$NEW_QUERY'"
-        exec "$0" "$NEW_QUERY" # exec replaces the current script process
-        ;;
-    "" ) 
-        # Launcher was closed without selection
-        log_msg "Launcher closed without action."
-        ;;
-    *) 
-        # An app was selected, execute it
-        log_msg "Executing command: '$OUTPUT'"
-        hyprctl dispatch exec "$OUTPUT" >> "$LOG_FILE" 2>&1
-        ;;
-esac
+if [[ -n "$OUTPUT" ]]; then
+    log "Executing command: '$OUTPUT'"
+    hyprctl dispatch exec "$OUTPUT" >> "$LOG_FILE" 2>&1
+fi
 
-log_msg "--- Script End ---"
+log "--- Script End ---"

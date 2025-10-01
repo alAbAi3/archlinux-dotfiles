@@ -13,19 +13,23 @@ Window {
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint
     color: "#00000000"
 
-    // The shell script will inject the JSON data here
     property var allApps: []
-    property string appsJsonPath: "%%APPS_JSON_PATH%%"
+    property string filterText: ""
 
     // --- Functions ---
     function readAppsFromFile() {
         var xhr = new XMLHttpRequest();
-        var url = appsJsonPath;
+        // Use a fixed, predictable path. The toggle script is responsible for creating this file.
+        var url = "file://" + Qt.getenv("HOME") + "/.cache/quickshell/apps.json";
         xhr.open("GET", url, false); // Synchronous request
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && (xhr.status === 200 || xhr.status === 0)) {
-                allApps = JSON.parse(xhr.responseText);
-                appGrid.model = allApps;
+                try {
+                    allApps = JSON.parse(xhr.responseText);
+                    appGrid.model = allApps;
+                } catch (e) {
+                    console.log("JSON Parse Error: " + e);
+                }
             }
         }
         xhr.send();
@@ -64,14 +68,22 @@ Window {
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 20
-            spacing: 20
+            spacing: 15
 
             SearchBox {
                 id: searchBox
                 Layout.fillWidth: true
-                // When Enter is pressed, quit and output the search query.
+                onTextChanged: {
+                    // Update the filter text and the model will update automatically
+                    filterText = text;
+                }
                 onAccepted: {
-                    Qt.quit("SEARCH:" + text)
+                    // If there's a visible item, launch it. Otherwise, do nothing.
+                    if (appGrid.model.length > 0) {
+                        var firstItem = appGrid.model[0];
+                        console.log(firstItem.command);
+                        Qt.quit();
+                    }
                 }
             }
 
@@ -80,11 +92,16 @@ Window {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 cellWidth: 130
-                cellHeight: 120
+                cellHeight: 110
                 
+                // Filter the model based on the search text
+                model: allApps.filter(function(app) {
+                    return app.name.toLowerCase().includes(filterText.toLowerCase())
+                })
+
                 delegate: AppDelegate {
                     appName: modelData.name
-                    appIcon: modelData.name ? modelData.name.substring(0, 1) : "?"
+                    appIcon: modelData.icon
                     appCommand: modelData.command
                 }
             }
