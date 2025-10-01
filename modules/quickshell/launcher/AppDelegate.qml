@@ -8,7 +8,7 @@ Rectangle {
     width: 120
     height: 110
     color: "transparent"
-    radius: 8
+    radius: 12
 
     property string appName: ""
     property string appIcon: ""
@@ -16,8 +16,8 @@ Rectangle {
 
     Rectangle {
         anchors.fill: parent
-        color: mouseArea.containsMouse ? Colors.color8 : "transparent"
-        radius: 8
+        color: mouseArea.containsMouse ? Colors.color1 : "transparent"
+        radius: 12
     }
 
     Image {

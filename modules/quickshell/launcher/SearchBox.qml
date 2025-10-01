@@ -5,17 +5,18 @@ import theme
 
 Rectangle {
     id: searchBox
-    height: 50
+    height: 55
     color: Colors.color0
-    radius: 8
+    radius: 10
     border.color: Colors.color5
     border.width: 1
 
     property alias text: searchInput.text
     property alias input: searchInput
 
-    // Define a signal that this component can emit
+    // Define signals that this component can emit
     signal accepted()
+    signal textChanged(string text)
 
     TextInput {
         id: searchInput
@@ -24,21 +25,17 @@ Rectangle {
         anchors.rightMargin: 15
         
         color: Colors.foreground
-        font.pixelSize: 18
+        font.pixelSize: 20
         
         verticalAlignment: TextInput.AlignVCenter
 
         // When the underlying TextInput is accepted (Enter pressed), emit our own signal
         onAccepted: searchBox.accepted()
+        onTextChanged: searchBox.textChanged(text)
         
         // The placeholder text
         Text {
             text: "Search apps..."
             color: Colors.color8
-            font.pixelSize: 18
-            visible: !searchInput.text
-            anchors.fill: parent
-            verticalAlignment: Text.AlignVCenter
-        }
-    }
-}
+            font.pixelSize: 20
+

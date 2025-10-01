@@ -25,7 +25,13 @@ _find_icon_path() {
     local search_paths=(
         "/usr/share/pixmaps"
         "/usr/share/icons/hicolor/scalable/apps"
+        "/usr/share/icons/hicolor/256x256/apps"
+        "/usr/share/icons/hicolor/128x128/apps"
+        "/usr/share/icons/hicolor/64x64/apps"
         "/usr/share/icons/hicolor/48x48/apps"
+        "/usr/share/icons/Adwaita/scalable/apps"
+        "/usr/share/icons/Adwaita/256x256/apps"
+        "/usr/share/icons/breeze/apps/48"
         "/usr/share/icons/gnome/48x48/apps"
     )
 

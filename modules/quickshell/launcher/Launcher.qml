@@ -43,13 +43,13 @@ Window {
         color: Colors.background
         border.color: Colors.color4
         border.width: 1
-        radius: 10
+        radius: 12
 
         MouseArea { anchors.fill: parent; onClicked: {} } // Prevent background click-through
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 20
+            anchors.margins: 25
             spacing: 15
 
             SearchBox {
