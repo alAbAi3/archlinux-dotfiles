@@ -17,21 +17,29 @@ Rectangle {
 
     // --- State Loading Function ---
     function loadState() {
+        var xhr = new XMLHttpRequest();
         var url = "file:///home/alibek/.cache/rice/active_workspace.txt";
-        try {
-            var fileContent = Qt.readUrl(url);
-            if (fileContent) {
-                var newActive = parseInt(fileContent.trim(), 10);
-                if (taskbar.activeWorkspace !== newActive) {
-                    taskbar.activeWorkspace = newActive;
-                    // console.log("QML State: Successfully updated active workspace to " + newActive)
+        xhr.open("GET", url, true);
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200 || xhr.status === 0) { // status 0 is for local files
+                    if (xhr.responseText) {
+                        try {
+                            var newActive = parseInt(xhr.responseText.trim(), 10);
+                            if (taskbar.activeWorkspace !== newActive) {
+                                taskbar.activeWorkspace = newActive;
+                            }
+                        } catch (e) {
+                            console.log("!!! QML PARSE ERROR: " + e.toString())
+                        }
+                    } // else: file is empty, do nothing
+                } else {
+                    console.log("!!! QML FILE READ ERROR: Status was " + xhr.status)
                 }
-            } else {
-                // This might be expected if the file is temporarily empty
             }
-        } catch (e) {
-            console.log("!!! QML FILE READ/PARSE ERROR: " + e.toString());
         }
+        xhr.send();
     }
 
     // --- Timer for Polling ---
