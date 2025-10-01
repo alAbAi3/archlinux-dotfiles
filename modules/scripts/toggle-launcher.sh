@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x # Enable verbose debug logging
+
 # This script toggles the launcher.
 
 # --- Configuration ---
@@ -8,9 +10,11 @@ APPS_JSON_FILE="$CACHE_DIR/apps.json"
 QML_FILE="$HOME/.config/quickshell/launcher/Launcher.qml"
 TEMP_QML_FILE="$CACHE_DIR/launcher.qml"
 PROCESS_PATTERN="quickshell.*launcher.qml"
-LOG_FILE="$CACHE_DIR/launcher.log"
+LOG_FILE="/tmp/launcher_debug.log" # Use a public, temporary log file for debugging
 
 # --- Setup ---
+# Clear previous log for clean debugging
+rm -f "$LOG_FILE"
 mkdir -p "$CACHE_DIR"
 
 # --- Logging ---
@@ -20,7 +24,7 @@ log() {
 
 # --- App List Generation ---
 _generate_app_list() {
-    log "Generating app list..."
+    log "[DEBUG] Generating app list..."
     local app_dirs=("/usr/share/applications" "$HOME/.local/share/applications")
     local temp_json=$(mktemp)
 
@@ -43,41 +47,45 @@ _generate_app_list() {
 
     jq -s '.' "$temp_json" > "$APPS_JSON_FILE"
     rm "$temp_json"
-    log "App list generation complete."
+    log "[DEBUG] App list generation complete."
 }
 
 # --- Main Logic ---
-log "--- Script Start ---"
+log "--- SCRIPT START ---"
 
 # If launcher is running, kill it and exit.
+log "[DEBUG] Checking for existing process with pattern: $PROCESS_PATTERN"
 if pgrep -f "$PROCESS_PATTERN" > /dev/null; then
-    log "Process found. Killing existing launcher."
+    log "[DEBUG] Process found. Killing existing launcher."
     pkill -f "$PROCESS_PATTERN"
+    log "[DEBUG] Script exiting after kill."
     exit 0
 fi
+log "[DEBUG] No existing process found."
 
 # Generate a fresh app list.
 _generate_app_list
 
 # Inject the JSON data into the QML file.
-log "Injecting app data into QML template."
+log "[DEBUG] Injecting app data into QML template."
 JSON_CONTENT=$(<"$APPS_JSON_FILE")
 sed "s|__APPS_JSON__|${JSON_CONTENT}|" "$QML_FILE" > "$TEMP_QML_FILE"
-log "Temporary QML file created at ${TEMP_QML_FILE}"
+log "[DEBUG] Temporary QML file created at ${TEMP_QML_FILE}"
 
 
 # Set necessary environment variables for QML
+log "[DEBUG] Setting environment variables."
 export QML_XHR_ALLOW_FILE_READ=1
 export QML_IMPORT_PATH="$HOME/.config/quickshell"
 
-log "Starting launcher..."
+log "[DEBUG] Starting launcher with QML file: $TEMP_QML_FILE"
 OUTPUT=$(quickshell -p "$TEMP_QML_FILE" 2>> "$LOG_FILE")
-log "Launcher output: '$OUTPUT'"
+log "[DEBUG] Launcher process finished. Raw output: '$OUTPUT'"
 
 # --- Handle Launcher Output ---
 if [[ -n "$OUTPUT" ]]; then
-    log "Executing command: '$OUTPUT'"
+    log "[DEBUG] Output detected, executing command via hyprctl: '$OUTPUT'"
     hyprctl dispatch exec "$OUTPUT" >> "$LOG_FILE" 2>&1
 fi
 
-log "--- Script End ---"
+log "--- SCRIPT END ---"
