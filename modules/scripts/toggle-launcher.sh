@@ -76,7 +76,7 @@ log "[DEBUG] Temporary QML file created at ${TEMP_QML_FILE}"
 # Set necessary environment variables for QML
 log "[DEBUG] Setting environment variables."
 export QML_XHR_ALLOW_FILE_READ=1
-export QML_IMPORT_PATH="$HOME/.config/quickshell"
+export QML_IMPORT_PATH="$HOME/.config/quickshell:$HOME/.config/quickshell/launcher"
 
 log "[DEBUG] Starting launcher with QML file: $TEMP_QML_FILE"
 OUTPUT=$(quickshell -p "$TEMP_QML_FILE" 2>> "$LOG_FILE")
