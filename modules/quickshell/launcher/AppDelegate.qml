@@ -27,7 +27,7 @@ Rectangle {
         anchors.topMargin: 15
         width: 48
         height: 48
-        source: appIcon ? "image://theme/" + appIcon : ""
+        source: appIcon
         fillMode: Image.PreserveAspectFit
     }
 

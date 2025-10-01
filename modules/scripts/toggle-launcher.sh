@@ -1,8 +1,9 @@
 #!/bin/bash
 
-set -x # Enable verbose debug logging
-
 # This script toggles the launcher.
+
+# Source the centralized logging script
+source "$HOME/.config/quickshell/lib/logging.sh"
 
 # --- Configuration ---
 CACHE_DIR="$HOME/.cache/quickshell"
@@ -10,21 +11,45 @@ APPS_JSON_FILE="$CACHE_DIR/apps.json"
 QML_FILE="$HOME/.config/quickshell/launcher/Launcher.qml"
 TEMP_QML_FILE="$CACHE_DIR/launcher.qml"
 PROCESS_PATTERN="quickshell.*launcher.qml"
-LOG_FILE="/tmp/launcher_debug.log" # Use a public, temporary log file for debugging
-
-# --- Setup ---
-# Clear previous log for clean debugging
-rm -f "$LOG_FILE"
-mkdir -p "$CACHE_DIR"
-
-# --- Logging ---
-log() {
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
-}
 
 # --- App List Generation ---
+_find_icon_path() {
+    local icon_name=$1
+    # Return early if it's already an absolute path
+    if [[ "$icon_name" == /* ]]; then
+        echo "file://$icon_name"
+        return
+    fi
+
+    # Search in common directories
+    local search_paths=(
+        "/usr/share/pixmaps"
+        "/usr/share/icons/hicolor/scalable/apps"
+        "/usr/share/icons/hicolor/48x48/apps"
+        "/usr/share/icons/gnome/48x48/apps"
+    )
+
+    for path in "${search_paths[@]}"; do
+        if [ -f "$path/$icon_name.png" ]; then
+            echo "file://$path/$icon_name.png"
+            return
+        fi
+        if [ -f "$path/$icon_name.svg" ]; then
+            echo "file://$path/$icon_name.svg"
+            return
+        fi
+        if [ -f "$path/$icon_name" ]; then
+            echo "file://$path/$icon_name"
+            return
+        fi
+    done
+
+    # Fallback icon
+    echo ""
+}
+
 _generate_app_list() {
-    log "[DEBUG] Generating app list..."
+    log_msg "Generating app list..."
     local app_dirs=("/usr/share/applications" "$HOME/.local/share/applications")
     local temp_json=$(mktemp)
 
@@ -35,10 +60,11 @@ _generate_app_list() {
 
                 local name=$(grep -m 1 "^Name=" "$file" | cut -d'=' -f2)
                 local exec_cmd=$(grep -m 1 "^Exec=" "$file" | cut -d'=' -f2 | sed 's/ %./ /g')
-                local icon=$(grep -m 1 "^Icon=" "$file" | cut -d'=' -f2)
+                local icon_name=$(grep -m 1 "^Icon=" "$file" | cut -d'=' -f2)
+                local icon_path=$(_find_icon_path "$icon_name")
 
                 if [[ -n "$name" && -n "$exec_cmd" ]]; then
-                    jq -n --arg name "$name" --arg icon "${icon:-application-x-executable}" --arg command "$exec_cmd" \
+                    jq -n --arg name "$name" --arg icon "${icon_path}" --arg command "$exec_cmd" \
                        '{name: $name, icon: $icon, command: $command}' >> "$temp_json"
                 fi
             done
@@ -47,46 +73,43 @@ _generate_app_list() {
 
     jq -s '.' "$temp_json" > "$APPS_JSON_FILE"
     rm "$temp_json"
-    log "[DEBUG] App list generation complete."
-    log "[DEBUG] apps.json content: $(<$APPS_JSON_FILE)"
+    log_msg "App list generation complete."
 }
 
 # --- Main Logic ---
-log "--- SCRIPT START ---"
+log_msg "--- Script Start ---"
 
 # If launcher is running, kill it and exit.
-log "[DEBUG] Checking for existing process with pattern: $PROCESS_PATTERN"
 if pgrep -f "$PROCESS_PATTERN" > /dev/null; then
-    log "[DEBUG] Process found. Killing existing launcher."
+    log_msg "Process found. Killing existing launcher."
     pkill -f "$PROCESS_PATTERN"
-    log "[DEBUG] Script exiting after kill."
     exit 0
 fi
-log "[DEBUG] No existing process found."
 
 # Generate a fresh app list.
 _generate_app_list
 
 # Inject the JSON data into the QML file.
-log "[DEBUG] Injecting app data into QML template."
-JSON_CONTENT=$(<"$APPS_JSON_FILE")
+log_msg "Injecting app data into QML template."
 awk -v r="$(<"$APPS_JSON_FILE")" '{gsub(/__APPS_JSON__/, r)}1' "$QML_FILE" > "$TEMP_QML_FILE"
-log "[DEBUG] Temporary QML file created at ${TEMP_QML_FILE}"
+log_msg "Temporary QML file created at ${TEMP_QML_FILE}"
 
 
 # Set necessary environment variables for QML
-log "[DEBUG] Setting environment variables."
-export QML_XHR_ALLOW_FILE_READ=1
 export QML_IMPORT_PATH="$HOME/.config/quickshell:$HOME/.config/quickshell/launcher"
 
-log "[DEBUG] Starting launcher with QML file: $TEMP_QML_FILE"
-OUTPUT=$(quickshell -p "$TEMP_QML_FILE" 2>> "$LOG_FILE")
-log "[DEBUG] Launcher process finished. Raw output: '$OUTPUT'"
+log_msg "Starting launcher with QML file: $TEMP_QML_FILE"
+OUTPUT=$(quickshell -p "$TEMP_QML_FILE" 2>&1) # Redirect stderr to stdout for logging
+log_msg "Launcher process finished. Raw output: '$OUTPUT'"
 
 # --- Handle Launcher Output ---
 if [[ -n "$OUTPUT" ]]; then
-    log "[DEBUG] Output detected, executing command via hyprctl: '$OUTPUT'"
-    hyprctl dispatch exec "$OUTPUT" >> "$LOG_FILE" 2>&1
+    # Don't try to execute the info/error messages from quickshell
+    COMMAND_TO_RUN=$(echo "$OUTPUT" | grep -v -E "INFO|WARN|ERROR|DEBUG" || true)
+    if [[ -n "$COMMAND_TO_RUN" ]]; then
+        log_msg "Output detected, executing command via hyprctl: '$COMMAND_TO_RUN'"
+        hyprctl dispatch exec "$COMMAND_TO_RUN"
+    fi
 fi
 
-log "--- SCRIPT END ---"
+log_msg "--- Script End ---"

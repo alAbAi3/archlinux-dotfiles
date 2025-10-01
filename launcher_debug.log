@@ -1,0 +1,78 @@
+2025-10-01 20:22:21 - --- SCRIPT START ---
+2025-10-01 20:22:21 - [DEBUG] Checking for existing process with pattern: quickshell.*launcher.qml
+2025-10-01 20:22:21 - [DEBUG] Process found. Killing existing launcher.
+2025-10-01 20:22:21 - [DEBUG] Script exiting after kill.
+2025-10-01 20:22:21 - [DEBUG] Launcher process finished. Raw output: '[32m  INFO[0m: Launching config: "/home/alibek/.cache/quickshell/launcher.qml"
+[32m  INFO[0m: Shell ID: "64226bfe266176cd7feadf082c060eec" Path ID "64226bfe266176cd7feadf082c060eec"
+[32m  INFO[0m: Saving logs to "/run/user/1000/quickshell/by-id/mqk8dlg3t/log.qslog"
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/hwloc
+[32m  INFO[0m: Configuration Loaded
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/kitty
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/qdbusviewer
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/htop
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/Alacritty
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/designer
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/foot
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/qv4l2
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/org.fontforge.FontForge
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/firefox
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/spectacle
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/preferences-system
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/assistant
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/network-wired
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/network-wired
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/gvim
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/hwloc
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/kitty
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/qdbusviewer
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/htop
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/Alacritty
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/designer
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/foot
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/qv4l2
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/org.fontforge.FontForge
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/firefox
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/spectacle
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/preferences-system
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/assistant
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/network-wired
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/network-wired
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/gvim'
+2025-10-01 20:22:21 - [DEBUG] Output detected, executing command via hyprctl: '[32m  INFO[0m: Launching config: "/home/alibek/.cache/quickshell/launcher.qml"
+[32m  INFO[0m: Shell ID: "64226bfe266176cd7feadf082c060eec" Path ID "64226bfe266176cd7feadf082c060eec"
+[32m  INFO[0m: Saving logs to "/run/user/1000/quickshell/by-id/mqk8dlg3t/log.qslog"
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/hwloc
+[32m  INFO[0m: Configuration Loaded
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/kitty
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/qdbusviewer
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/htop
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/Alacritty
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/designer
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/foot
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/qv4l2
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/org.fontforge.FontForge
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/firefox
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/spectacle
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/preferences-system
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/assistant
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/network-wired
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/network-wired
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/gvim
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/hwloc
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/kitty
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/qdbusviewer
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/htop
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/Alacritty
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/designer
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/foot
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/qv4l2
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/org.fontforge.FontForge
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/firefox
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/spectacle
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/preferences-system
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/assistant
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/network-wired
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/network-wired
+[33m  WARN[97m scene[0m: QML Image at file:///home/alibek/archlinux-dotfiles/modules/quickshell/launcher/AppDelegate.qml[23:5]: Invalid image provider: image://theme/gvim'
+ok
+2025-10-01 20:22:21 - --- SCRIPT END ---
