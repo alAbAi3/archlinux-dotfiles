@@ -12,4 +12,3 @@ ttf-dejavu
 jq
 qt6-declarative
 qt6-tools
-qt6-dbus
