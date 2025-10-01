@@ -48,6 +48,7 @@ _generate_app_list() {
     jq -s '.' "$temp_json" > "$APPS_JSON_FILE"
     rm "$temp_json"
     log "[DEBUG] App list generation complete."
+    log "[DEBUG] apps.json content: $(<$APPS_JSON_FILE)"
 }
 
 # --- Main Logic ---
