@@ -15,7 +15,6 @@ Rectangle {
 
     // Define signals that this component can emit
     signal accepted()
-    signal textChanged(string text)
 
     TextInput {
         id: searchInput
@@ -30,7 +29,6 @@ Rectangle {
 
         // When the underlying TextInput is accepted (Enter pressed), emit our own signal
         onAccepted: searchBox.accepted()
-        onTextChanged: searchBox.textChanged(text)
         
         // The placeholder text
         Text {
