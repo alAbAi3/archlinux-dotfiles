@@ -111,10 +111,19 @@ OUTPUT=$(quickshell -p "$TEMP_QML_FILE")
 log_msg "Launcher process finished. Raw output: '$OUTPUT'"
 
 # --- Handle Launcher Output ---
-# If the output is not empty, we assume it's the command to run.
 if [[ -n "$OUTPUT" ]]; then
-    log_msg "Output detected, executing command via hyprctl: '$OUTPUT'"
-    hyprctl dispatch exec "$OUTPUT"
+    # The quickshell process is noisy on stdout. We must find the specific line
+    # containing our command and extract it.
+    # The target line looks like: "DEBUG qml: /path/to/command"
+    COMMAND_TO_RUN=$(echo "$OUTPUT" | grep "DEBUG.*qml" | sed 's/.*: //')
+
+    if [[ -n "$COMMAND_TO_RUN" ]]; then
+        log_msg "Extracted command: '$COMMAND_TO_RUN'"
+        log_msg "Executing command via hyprctl: '$COMMAND_TO_RUN'"
+        hyprctl dispatch exec "$COMMAND_TO_RUN"
+    else
+        log_msg "Could not extract a command from the launcher output."
+    fi
 fi
 
 log_msg "--- Script End ---"
