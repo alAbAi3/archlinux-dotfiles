@@ -44,7 +44,7 @@ Rectangle {
 
     // --- Timer for Polling ---
     Timer {
-        interval: 250 // Poll every 250ms for responsiveness
+        interval: 100 // Poll every 100ms for responsiveness
         running: true
         repeat: true
         onTriggered: { loadState() }

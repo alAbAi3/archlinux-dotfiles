@@ -14,9 +14,10 @@ ORIGINAL_SCRIPT_PATH=$(realpath "${BASH_SOURCE[0]}")
 SCRIPT_DIR=$(dirname "$ORIGINAL_SCRIPT_PATH")
 PROJECT_ROOT=$(dirname "$(dirname "$(dirname "$ORIGINAL_SCRIPT_PATH")")")
 
+# The OUTPUT_FILE needs to be the live config file, not the one in the source repo.
 THEME_DIR="$HOME/.config/quickshell/theme"
 TEMPLATE_FILE="$THEME_DIR/templates/colors.qml.template"
-OUTPUT_FILE="$PROJECT_ROOT/modules/quickshell/theme/colors.qml"
+OUTPUT_FILE="$HOME/.config/quickshell/theme/colors.qml"
 WAL_CACHE="$HOME/.cache/wal"
 
 # --- Default Wallpaper Handling ---
@@ -54,8 +55,15 @@ fi
 
 # --- Main Logic ---
 
+# Note for Alacritty theming:
+# For this to work, your alacritty.yml should contain the following line:
+# import:
+#   - "~/.cache/wal/alacritty.yml"
+
 log_msg "1. Generating color palette with 'wal'..."
-wal -i "$WALLPAPER" -n
+# We remove the -n flag to allow wal to generate backend files (for alacritty)
+# and send the reload sequence to running terminals.
+wal -i "$WALLPAPER"
 
 if [ ! -f "$WAL_CACHE/colors.json" ]; then
     log_msg "Error: 'wal' did not generate colors.json. Is 'wal' installed and working?"
