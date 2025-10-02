@@ -4,7 +4,7 @@
 #
 # This script will:
 # 1. Install necessary packages from official repos and AUR.
-# 2. Symlink dotfiles into the correct locations using `stow`.
+# 2. Symlink dotfiles into the correct locations.
 # 3. Install NVIDIA drivers if an NVIDIA GPU is detected.
 #
 
@@ -20,8 +20,6 @@ PROJECT_ROOT=$(realpath "$SCRIPT_DIR/..")
 PACMAN_PACKAGES_FILE="$PROJECT_ROOT/packages/packages-base.txt"
 # List of packages to install from the AUR
 AUR_PACKAGES_FILE="$PROJECT_ROOT/packages/packages-aur.txt"
-# Stow modules to link
-STOW_MODULES="hypr quickshell scripts"
 # NVIDIA packages
 NVIDIA_PACKAGES="linux-headers nvidia-dkms qt5-wayland qt6-wayland egl-wayland"
 
@@ -66,7 +64,7 @@ install_aur_packages() {
 remove_conflicting_files() {
     echo "-> Checking for and removing conflicting default configs..."
     # Add any conflicting files or directories here
-    CONFLICTS=("$HOME/.config/hypr" "$HOME/.config/quickshell")
+    CONFLICTS=("$HOME/.config/hypr" "$HOME/.config/quickshell" "$HOME/.config/alacritty")
 
     for conflict in "${CONFLICTS[@]}"; do
         if [ -e "$conflict" ] && [ ! -L "$conflict" ]; then
@@ -85,7 +83,6 @@ link_dotfiles() {
     mkdir -p "$HOME/.local/bin"
     mkdir -p "$HOME/.cache/rice"
     mkdir -p "$HOME/.cache/swww"
-    mkdir -p "$HOME/.cache/swww"
     mkdir -p "$HOME/Pictures/Wallpapers"
 
     # Link config directories using ln -s for clarity and reliability
@@ -94,6 +91,9 @@ link_dotfiles() {
 
     echo "  - Linking quickshell config..."
     ln -sf "$PROJECT_ROOT/modules/quickshell" "$HOME/.config/quickshell"
+
+    echo "  - Linking alacritty config..."
+    ln -sf "$PROJECT_ROOT/modules/alacritty" "$HOME/.config/alacritty"
 
     echo "  - Linking wallpapers directory..."
     ln -sf "$PROJECT_ROOT/wallpapers" "$HOME/Pictures/Wallpapers"
