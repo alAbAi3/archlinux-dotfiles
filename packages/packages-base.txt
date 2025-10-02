@@ -21,7 +21,5 @@ wireplumber
 pavucontrol
 xdg-desktop-portal
 alsa-utils
-sof-firmware
 alsa-firmware
 linux-firmware
-sof-tools
