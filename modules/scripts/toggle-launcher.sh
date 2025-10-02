@@ -105,17 +105,16 @@ log_msg "Temporary QML file created at ${TEMP_QML_FILE}"
 export QML_IMPORT_PATH="$HOME/.config/quickshell:$HOME/.config/quickshell/launcher"
 
 log_msg "Starting launcher with QML file: $TEMP_QML_FILE"
-OUTPUT=$(quickshell -p "$TEMP_QML_FILE" 2>&1) # Redirect stderr to stdout for logging
+# We only capture stdout, as stderr may contain unrelated Qt warnings.
+# The QML component is responsible for printing ONLY the command to stdout.
+OUTPUT=$(quickshell -p "$TEMP_QML_FILE")
 log_msg "Launcher process finished. Raw output: '$OUTPUT'"
 
 # --- Handle Launcher Output ---
+# If the output is not empty, we assume it's the command to run.
 if [[ -n "$OUTPUT" ]]; then
-    # Don't try to execute the info/error messages from quickshell
-    COMMAND_TO_RUN=$(echo "$OUTPUT" | grep -v -E "INFO|WARN|ERROR|DEBUG" || true)
-    if [[ -n "$COMMAND_TO_RUN" ]]; then
-        log_msg "Output detected, executing command via hyprctl: '$COMMAND_TO_RUN'"
-        hyprctl dispatch exec "$COMMAND_TO_RUN"
-    fi
+    log_msg "Output detected, executing command via hyprctl: '$OUTPUT'"
+    hyprctl dispatch exec "$OUTPUT"
 fi
 
 log_msg "--- Script End ---"
