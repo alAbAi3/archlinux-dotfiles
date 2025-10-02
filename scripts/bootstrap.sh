@@ -64,7 +64,7 @@ install_aur_packages() {
 remove_conflicting_files() {
     echo "-> Checking for and removing conflicting default configs..."
     # Add any conflicting files or directories here
-    CONFLICTS=("$HOME/.config/hypr" "$HOME/.config/quickshell" "$HOME/.config/alacritty" "$HOME/.config/starship" "$HOME/.bashrc")
+    CONFLICTS=("$HOME/.config/hypr" "$HOME/.config/quickshell" "$HOME/.config/alacritty" "$HOME/.config/starship" "$HOME/.bashrc" "$HOME/.config/xdg-desktop-portal")
 
     for conflict in "${CONFLICTS[@]}"; do
         if [ -e "$conflict" ] && [ ! -L "$conflict" ]; then
@@ -97,6 +97,10 @@ link_dotfiles() {
 
     echo "  - Linking starship config..."
     ln -sf "$PROJECT_ROOT/modules/starship" "$HOME/.config/starship"
+
+    echo "  - Linking xdg-desktop-portal config..."
+    mkdir -p "$HOME/.config/xdg-desktop-portal"
+    ln -sf "$PROJECT_ROOT/modules/xdg-desktop-portal/portals.conf" "$HOME/.config/xdg-desktop-portal/portals.conf"
 
     echo "  - Linking bashrc..."
     ln -sf "$PROJECT_ROOT/modules/shell/.bashrc" "$HOME/.bashrc"
