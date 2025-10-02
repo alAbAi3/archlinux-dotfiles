@@ -61,7 +61,7 @@ _generate_app_list() {
 
     for dir in "${app_dirs[@]}"; do
         if [[ -d "$dir" ]]; then
-            grep -l -r --include='*.desktop' -E "^Name=|^Exec=|^Icon=" "$dir" | while read -r file; do
+            find "$dir" -name "*.desktop" | while read -r file; do
                 log_msg "Processing file: $file"
 
                 if grep -q "NoDisplay=true" "$file"; then
@@ -135,6 +135,6 @@ if [[ -n "$OUTPUT" ]]; then
     else
         log_msg "Could not extract a command from the launcher output."
     fi
-}
+fi
 
 log_msg "--- Script End ---"
