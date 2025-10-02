@@ -14,3 +14,12 @@ qt6-declarative
 qt6-tools
 qt6-base
 starship
+# Audio
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+pavucontrol
+
+# Portals & Permissions
+xdg-desktop-portal

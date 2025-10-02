@@ -1,3 +1,4 @@
 quickshell-git
 swww
 ttf-firacode-nerd
+xdg-desktop-portal-hyprland
