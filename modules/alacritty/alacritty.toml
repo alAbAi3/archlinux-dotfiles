@@ -1,0 +1,26 @@
+# Alacritty TOML configuration
+# Imports the pywal color theme.
+
+import = [
+    "~/.cache/wal/alacritty.toml"
+]
+
+# Font configuration
+[font]
+size = 11.0
+
+[font.normal]
+family = "FiraCode Nerd Font"
+style = "Regular"
+
+[font.bold]
+family = "FiraCode Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "FiraCode Nerd Font"
+style = "Italic"
+
+# Window padding
+[window]
+padding = { x = 10, y = 10 }

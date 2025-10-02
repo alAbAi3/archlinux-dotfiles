@@ -64,7 +64,7 @@ install_aur_packages() {
 remove_conflicting_files() {
     echo "-> Checking for and removing conflicting default configs..."
     # Add any conflicting files or directories here
-    CONFLICTS=("$HOME/.config/hypr" "$HOME/.config/quickshell" "$HOME/.config/alacritty")
+    CONFLICTS=("$HOME/.config/hypr" "$HOME/.config/quickshell" "$HOME/.config/alacritty" "$HOME/.config/starship" "$HOME/.bashrc")
 
     for conflict in "${CONFLICTS[@]}"; do
         if [ -e "$conflict" ] && [ ! -L "$conflict" ]; then
@@ -94,6 +94,12 @@ link_dotfiles() {
 
     echo "  - Linking alacritty config..."
     ln -sf "$PROJECT_ROOT/modules/alacritty" "$HOME/.config/alacritty"
+
+    echo "  - Linking starship config..."
+    ln -sf "$PROJECT_ROOT/modules/starship" "$HOME/.config/starship"
+
+    echo "  - Linking bashrc..."
+    ln -sf "$PROJECT_ROOT/modules/shell/.bashrc" "$HOME/.bashrc"
 
     echo "  - Linking wallpapers directory..."
     ln -sf "$PROJECT_ROOT/wallpapers" "$HOME/Pictures/Wallpapers"

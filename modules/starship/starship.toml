@@ -1,0 +1,33 @@
+# starship.toml
+# A minimal, clean, and informative starship configuration.
+
+# Inserts a blank line between shell prompts
+add_newline = true
+
+# Set command timeout to 2 seconds
+command_timeout = 2000
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
+[directory]
+style = "bold blue"
+truncation_length = 4
+
+[git_branch]
+style = "bold purple"
+
+[git_status]
+style = "bold red"
+stashed = "*"
+
+[cmd_duration]
+min_time = 500
+style = "bold yellow"
+
+[time]
+disabled = false
+style = "bold cyan"
+format = '🕙[ %T ]'
+

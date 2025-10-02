@@ -1,2 +1,3 @@
 quickshell-git
 swww
+ttf-firacode-nerd
