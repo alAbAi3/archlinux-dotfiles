@@ -20,3 +20,4 @@ pipewire-alsa
 wireplumber
 pavucontrol
 xdg-desktop-portal
+alsa-utils
