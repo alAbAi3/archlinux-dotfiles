@@ -1,6 +1,7 @@
 # Alacritty TOML configuration
 # Imports the pywal color theme.
 
+[general]
 import = [
     "~/.cache/wal/alacritty.toml"
 ]
