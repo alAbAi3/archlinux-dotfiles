@@ -175,3 +175,58 @@ This approach was born from the user's request to simplify the requirements: hav
 ## Final Status: Taskbar Stable
 
 After a long and difficult debugging process that uncovered fundamental limitations in the QML environment, a simple and robust solution was found. The final "Keybind-Driven" architecture is reliable because it minimizes complexity, removes the need for background listeners, and correctly uses the one QML I/O feature (`XMLHttpRequest`) that we were able to enable. The taskbar now correctly displays 5 workspaces and highlights the active one in real-time.
+
+---
+
+## Problem 9: General System Stabilization & Theming
+
+This phase involved fixing a series of bugs related to window management, UI responsiveness, and application theming, while also adding a more modern terminal prompt.
+
+*   **Sub-Problem: Workspace "Merging" and UI Slowness**
+    1.  **Symptom:** Terminals opened on different workspaces would all appear on a single workspace. The taskbar's active workspace indicator was slow to update.
+    2.  **Investigation:** A `windowrulev2 = workspace 4, class:^(Alacritty)$` in `hyprland.conf` was forcing all terminals to one workspace. The polling interval in `Taskbar.qml` was found to be 250ms.
+    3.  **Solution:** The overly aggressive window rule was commented out. The timer interval in `Taskbar.qml` was reduced to a more responsive 100ms.
+
+*   **Sub-Problem: Theming Inconsistencies**
+    1.  **Symptom:** Changing the theme with `apply-theme.sh` would not affect newly opened applications like Alacritty or the App Launcher.
+    2.  **Investigation:** The `apply-theme.sh` script was writing the generated `colors.qml` file to the source directory, not the live `~/.config/quickshell/theme/` directory. It also wasn't configured to update Alacritty.
+    3.  **Solution:** The script was modified to write directly to the live config directory. The `-n` flag was removed from the `wal` command to allow it to update backends. An `alacritty.toml` file was created and automated via `bootstrap.sh` to import the `wal` theme. A subsequent deprecation warning from Alacritty was also fixed by moving the `import` key into a `[general]` table.
+
+*   **Sub-Problem: Enhancing the Terminal**
+    1.  **Goal:** Make the terminal prompt more modern and informative.
+    2.  **Solution:** The `starship` prompt was chosen. The `starship` package and `ttf-firacode-nerd` font were added to the package lists. A `starship.toml` config was created, and a `.bashrc` file was added to initialize the prompt. The Alacritty config was updated to use the new font, and the entire process was automated in `bootstrap.sh`.
+
+---
+
+## Problem 10: The App Launcher Saga (Part 2)
+
+This phase involved debugging two separate, complex issues with the App Launcher that appeared after the initial implementation.
+
+*   **Sub-Problem: App Fails to Launch**
+    1.  **Symptom:** Clicking an application in the launcher would close the launcher but the application would not start.
+    2.  **Investigation:** Initial diagnosis pointed to the `toggle-launcher.sh` script incorrectly capturing both `stdout` and `stderr` from the `quickshell` process. However, after fixing that, logs revealed the `quickshell` process itself was printing all log levels (INFO, DEBUG, etc.) to `stdout`, contaminating the output.
+    3.  **Solution:** The script's output handling was made more robust. Instead of trying to filter out bad lines, the script now specifically searches for the `DEBUG qml:` line and uses `sed 's/.*: //'` to extract *only* the command, ignoring all other output.
+
+*   **Sub-Problem: Discord Not Appearing**
+    1.  **Symptom:** Discord, installed via `pacman`, was not appearing in the app list.
+    2.  **Investigation:** A long and difficult debugging process, aided by adding detailed logging to the script, revealed that the initial `grep` command used to discover `.desktop` files was silently failing to find the `discord.desktop` file, despite the file path and content appearing correct.
+    3.  **Solution:** The brittle `grep -l -r --include='*.desktop' ...` command was replaced with a more robust and simpler `find "$dir" -name "*.desktop"` command. This ensures that all `.desktop` files are found and passed to the parsing loop, fixing the discovery issue.
+
+---
+
+## Problem 11: The Great Audio Debug (Discord Mic/Sound)
+
+This was a deep and complex hardware and driver-level issue, manifesting as no microphone or sound working in Discord.
+
+*   **Symptom:** In Discord's voice settings, the input device was `auto_null.monitor` and the output was `Dummy output`. This indicated a total failure to detect any audio hardware.
+
+*   **Investigation & Solutions:**
+    1.  **Initial Check (Packages):** It was discovered that essential audio packages were missing. `pipewire`, `wireplumber`, `pipewire-pulse`, and `pavucontrol` were added to `packages-base.txt`.
+    2.  **Portal Check (Packages):** The permissions system was also incomplete. `xdg-desktop-portal` was added to base packages, `xdg-desktop-portal-hyprland` to AUR packages, and `hyprland.conf` was updated to launch the portal service.
+    3.  **Portal Conflict:** When the issue persisted, a conflict with pre-existing KDE portals was suspected. A `portals.conf` file was created to explicitly set `hyprland` as the default portal, and the `bootstrap.sh` script was updated to install it.
+    4.  **ALSA Check:** The issue still remained. `pavucontrol` showed "no card available", pointing to a lower-level problem. The user confirmed that `aplay -l` and `arecord -l` failed with "command not found", revealing that `alsa-utils` was missing. This package was added.
+    5.  **The Root Cause (Kernel Driver):** After installing `alsa-utils`, `aplay -l` still reported "no soundcards found". This confirmed the issue was at the kernel/driver level. The user provided `dmesg` logs, which contained the "smoking gun": `SOF firmware and/or topology file not found.` The log specifically requested the file `sof-rpl.ri` for the user's **Intel Raptor Lake** hardware.
+    6.  **The Final Fix:** This indicated the version of `sof-firmware` from the main Arch repository was too old. The solution was to use the latest development version. `sof-firmware` was removed, and `sof-firmware-git` was added to the AUR packages list. Additional firmware (`linux-firmware`, `alsa-firmware`) was also added to be thorough.
+
+*   **Final Status:** After installing `sof-firmware-git` and rebooting, the kernel was finally able to load the correct driver, detect the sound card, and the entire audio stack (ALSA -> PipeWire -> Discord) began functioning correctly.
+
