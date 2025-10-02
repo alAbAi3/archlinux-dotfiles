@@ -62,16 +62,27 @@ _generate_app_list() {
     for dir in "${app_dirs[@]}"; do
         if [[ -d "$dir" ]]; then
             grep -l -r --include='*.desktop' -E "^Name=|^Exec=|^Icon=" "$dir" | while read -r file; do
-                if grep -q "NoDisplay=true" "$file"; then continue; fi
+                log_msg "Processing file: $file"
+
+                if grep -q "NoDisplay=true" "$file"; then
+                    log_msg "  -> Skipped (NoDisplay=true)"
+                    continue
+                fi
 
                 local name=$(grep -m 1 "^Name=" "$file" | cut -d'=' -f2)
                 local exec_cmd=$(grep -m 1 "^Exec=" "$file" | cut -d'=' -f2 | sed 's/ %./ /g')
                 local icon_name=$(grep -m 1 "^Icon=" "$file" | cut -d'=' -f2)
                 local icon_path=$(_find_icon_path "$icon_name")
 
+                log_msg "  -> Found Name: '$name'"
+                log_msg "  -> Found Exec: '$exec_cmd'"
+
                 if [[ -n "$name" && -n "$exec_cmd" ]]; then
                     jq -n --arg name "$name" --arg icon "${icon_path}" --arg command "$exec_cmd" \
                        '{name: $name, icon: $icon, command: $command}' >> "$temp_json"
+                    log_msg "  -> Added to list."
+                else
+                    log_msg "  -> Skipped (Name or Exec was empty)."
                 fi
             done
         fi
@@ -124,6 +135,6 @@ if [[ -n "$OUTPUT" ]]; then
     else
         log_msg "Could not extract a command from the launcher output."
     fi
-fi
+}
 
 log_msg "--- Script End ---"
