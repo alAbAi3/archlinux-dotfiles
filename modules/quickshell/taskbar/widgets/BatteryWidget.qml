@@ -27,7 +27,9 @@ RowLayout {
         xhr.open("GET", "file:///sys/class/power_supply/BAT0/capacity", true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && (xhr.status === 200 || xhr.status === 0)) {
-                batteryLevel = parseInt(xhr.responseText.trim(), 10);
+                if (xhr.responseText) {
+                    batteryLevel = parseInt(xhr.responseText.trim(), 10);
+                }
             }
         }
         xhr.send();
@@ -36,7 +38,9 @@ RowLayout {
         xhr2.open("GET", "file:///sys/class/power_supply/BAT0/status", true);
         xhr2.onreadystatechange = function() {
             if (xhr2.readyState === XMLHttpRequest.DONE && (xhr2.status === 200 || xhr2.status === 0)) {
-                isCharging = xhr2.responseText.trim() === "Charging";
+                if (xhr2.responseText) {
+                    isCharging = xhr2.responseText.trim() === "Charging";
+                }
             }
         }
         xhr2.send();

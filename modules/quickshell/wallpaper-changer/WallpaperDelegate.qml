@@ -27,12 +27,6 @@ Item {
                 easing.type: Easing.OutCubic
             } 
         }
-        
-        // Drop shadow
-        layer.enabled: mouseArea.containsMouse
-        layer.effect: ShaderEffect {
-            property color shadowColor: Qt.rgba(0, 0, 0, 0.4)
-        }
 
         Image {
             id: thumbnail

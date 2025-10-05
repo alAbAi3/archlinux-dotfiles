@@ -14,12 +14,6 @@ Rectangle {
     border.width: 1
 
     property int activeWorkspace: 1
-    
-    // Add subtle shadow effect
-    layer.enabled: true
-    layer.effect: ShaderEffect {
-        property color shadowColor: Qt.rgba(0, 0, 0, 0.3)
-    }
 
     // --- State Loading Function ---
     function loadState() {

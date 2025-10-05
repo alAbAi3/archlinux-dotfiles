@@ -69,12 +69,6 @@ Window {
             to: 1
             duration: 200
         }
-        
-        // Subtle shadow
-        layer.enabled: true
-        layer.effect: ShaderEffect {
-            property color shadowColor: Qt.rgba(0, 0, 0, 0.5)
-        }
 
         MouseArea { anchors.fill: parent; onClicked: {} } // Prevent background click-through
 
