@@ -1,7 +1,7 @@
-import QtQuick
-import QtQuick.Window
-import QtQuick.Layouts
-import QtQuick.Controls // Added for ScrollView
+import QtQuick 6.0
+import QtQuick.Window 6.0
+import QtQuick.Layouts 6.0
+import QtQuick.Controls 6.0
 
 Window {
     id: window

@@ -1,9 +1,9 @@
-import QtQuick
-import QtQuick.Window
-import QtQuick.Layouts
-import QtQuick.Controls
-import theme
-import launcher
+import QtQuick 6.0
+import QtQuick.Window 6.0
+import QtQuick.Layouts 6.0
+import QtQuick.Controls 6.0
+import "../theme"
+import "."
 
 Window {
     id: window

@@ -1,4 +1,4 @@
-import QtQuick
+import QtQuick 6.0
 
 Item {
     id: delegateRoot

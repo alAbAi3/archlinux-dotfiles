@@ -1,5 +1,5 @@
-import QtQuick
-import QtQuick.Layouts
+import QtQuick 6.0
+import QtQuick.Layouts 6.0
 import "../theme"
 import "widgets"
 
@@ -173,26 +173,6 @@ Rectangle {
         RowLayout {
             spacing: 15
             Layout.alignment: Qt.AlignVCenter
-
-            VolumeWidget {
-                textColor: Colors.foreground
-            }
-
-            Rectangle {
-                width: 1
-                height: 20
-                color: Qt.rgba(Colors.color8.r, Colors.color8.g, Colors.color8.b, 0.3)
-            }
-
-            BatteryWidget {
-                textColor: Colors.foreground
-            }
-
-            Rectangle {
-                width: 1
-                height: 20
-                color: Qt.rgba(Colors.color8.r, Colors.color8.g, Colors.color8.b, 0.3)
-            }
 
             ClockWidget {
                 color: Colors.foreground

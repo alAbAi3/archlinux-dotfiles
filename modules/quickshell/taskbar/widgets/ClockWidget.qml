@@ -1,4 +1,4 @@
-import QtQuick
+import QtQuick 6.0
 
 // ClockWidget.qml
 // A self-contained component that displays the current time.

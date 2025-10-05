@@ -1,6 +1,6 @@
 // modules/quickshell/launcher/SearchBox.qml
-import QtQuick
-import theme
+import QtQuick 6.0
+import "../theme"
 
 Rectangle {
     id: searchBox

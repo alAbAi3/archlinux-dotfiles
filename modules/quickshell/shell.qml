@@ -1,5 +1,5 @@
-import QtQuick
-import QtQuick.Window
+import QtQuick 6.0
+import QtQuick.Window 6.0
 import "taskbar"
 
 // shell.qml (main)
