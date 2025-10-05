@@ -3,42 +3,71 @@
 import QtQuick
 import theme
 
-Rectangle {
+Item {
     id: delegateRoot
     width: 120
     height: 110
-    color: "transparent"
-    radius: 12
 
     property string appName: ""
     property string appIcon: ""
     property string appCommand: ""
 
     Rectangle {
+        id: background
         anchors.fill: parent
-        color: mouseArea.containsMouse ? Colors.color1 : "transparent"
+        color: mouseArea.containsMouse ? Qt.rgba(Colors.color4.r, Colors.color4.g, Colors.color4.b, 0.2) : "transparent"
         radius: 12
+        border.color: mouseArea.containsMouse ? Colors.color4 : "transparent"
+        border.width: 1
+        
+        scale: mouseArea.pressed ? 0.95 : 1.0
+        
+        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on border.color { ColorAnimation { duration: 150 } }
+        Behavior on scale { 
+            NumberAnimation { 
+                duration: 100 
+                easing.type: Easing.OutCubic
+            } 
+        }
     }
 
-    Image {
-        id: appIconImage
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 15
-        width: 48
-        height: 48
-        source: appIcon
-        fillMode: Image.PreserveAspectFit
-    }
+    Column {
+        anchors.centerIn: parent
+        spacing: 10
+        
+        Image {
+            id: appIconImage
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 48
+            height: 48
+            source: appIcon
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            
+            scale: mouseArea.containsMouse ? 1.1 : 1.0
+            
+            Behavior on scale { 
+                NumberAnimation { 
+                    duration: 150 
+                    easing.type: Easing.OutCubic
+                } 
+            }
+        }
 
-    Text {
-        id: appNameText
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottomMargin: 15
-        text: appName
-        color: Colors.foreground
-        font.bold: true
+        Text {
+            id: appNameText
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: delegateRoot.width - 10
+            text: appName
+            color: Colors.foreground
+            font.pixelSize: 11
+            font.weight: Font.Medium
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            maximumLineCount: 2
+            elide: Text.ElideRight
+        }
     }
 
     MouseArea {

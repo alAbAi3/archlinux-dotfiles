@@ -46,36 +46,94 @@ Window {
     Rectangle {
         id: changerOverlay
         anchors.fill: parent
-        color: Qt.rgba(0, 0, 0, 0.5)
+        color: Qt.rgba(0, 0, 0, 0.7)
+        opacity: 0
+        
+        NumberAnimation on opacity {
+            from: 0
+            to: 1
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
+        
         MouseArea { anchors.fill: parent; onClicked: Qt.quit() }
     }
 
     Rectangle {
         id: changer
-        width: 950
-        height: 550
+        width: 1000
+        height: 600
         anchors.centerIn: parent
-        color: "#1E1E1E" // Hardcoded background color
-        border.color: "#888888" // Hardcoded border color
-        border.width: 1
-        radius: 10
+        color: Qt.rgba(0.12, 0.12, 0.12, 0.95)
+        border.color: Qt.rgba(0.5, 0.5, 0.5, 0.3)
+        border.width: 2
+        radius: 16
+        
+        scale: 0.9
+        opacity: 0
+        
+        NumberAnimation on scale {
+            from: 0.9
+            to: 1.0
+            duration: 300
+            easing.type: Easing.OutBack
+        }
+        
+        NumberAnimation on opacity {
+            from: 0
+            to: 1
+            duration: 200
+        }
+        
+        // Subtle shadow
+        layer.enabled: true
+        layer.effect: ShaderEffect {
+            property color shadowColor: Qt.rgba(0, 0, 0, 0.5)
+        }
 
         MouseArea { anchors.fill: parent; onClicked: {} } // Prevent background click-through
 
-        ScrollView {
+        ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 20
-            clip: true
+            anchors.margins: 30
+            spacing: 20
+            
+            // Title
+            Text {
+                text: "Wallpaper Gallery"
+                font.pixelSize: 24
+                font.weight: Font.Bold
+                color: "#FFFFFF"
+                Layout.alignment: Qt.AlignLeft
+            }
+            
+            Text {
+                text: "Click a wallpaper to apply it"
+                font.pixelSize: 13
+                color: Qt.rgba(1, 1, 1, 0.6)
+                Layout.alignment: Qt.AlignLeft
+            }
 
-            GridView {
-                id: wallpaperGrid
-                width: parent.width
-                model: wallpaperModel
-                cellWidth: 300
-                cellHeight: 200
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
 
-                delegate: WallpaperDelegate {
-                    wallpaperPath: model.path
+                GridView {
+                    id: wallpaperGrid
+                    width: parent.width
+                    model: wallpaperModel
+                    cellWidth: 320
+                    cellHeight: 200
+                    
+                    ScrollBar.vertical: ScrollBar {
+                        active: true
+                        policy: ScrollBar.AsNeeded
+                    }
+
+                    delegate: WallpaperDelegate {
+                        wallpaperPath: model.path
+                    }
                 }
             }
         }

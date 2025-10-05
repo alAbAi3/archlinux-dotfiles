@@ -121,6 +121,10 @@ set_script_permissions() {
     echo "-> Making all shell scripts executable..."
     find "$PROJECT_ROOT/modules/scripts" -type f -name "*.sh" -exec chmod +x {} +
     find "$PROJECT_ROOT/scripts" -type f -name "*.sh" -exec chmod +x {} +
+    
+    # Ensure specific new scripts are executable
+    chmod +x "$PROJECT_ROOT/modules/scripts/update-volume.sh" 2>/dev/null || true
+    
     echo "  - Permissions set."
 }
 

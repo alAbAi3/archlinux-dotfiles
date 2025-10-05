@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
+import QtQuick.Controls
 import theme
 import launcher
 
@@ -27,7 +28,15 @@ Window {
     Rectangle {
         id: launcherOverlay
         anchors.fill: parent
-        color: Qt.rgba(0, 0, 0, 0.5) // Semi-transparent background
+        color: Qt.rgba(0, 0, 0, 0.7) // Darker semi-transparent background
+        opacity: 0
+
+        NumberAnimation on opacity {
+            from: 0
+            to: 1
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
 
         MouseArea {
             anchors.fill: parent
@@ -37,20 +46,51 @@ Window {
 
     Rectangle {
         id: launcher
-        width: 650
-        height: 450
+        width: 700
+        height: 500
         anchors.centerIn: parent
-        color: Colors.background
-        border.color: Colors.color4
-        border.width: 1
-        radius: 12
+        color: Qt.rgba(Colors.background.r, Colors.background.g, Colors.background.b, 0.95)
+        border.color: Qt.rgba(Colors.color4.r, Colors.color4.g, Colors.color4.b, 0.5)
+        border.width: 2
+        radius: 16
+        
+        scale: 0.9
+        opacity: 0
+        
+        NumberAnimation on scale {
+            from: 0.9
+            to: 1.0
+            duration: 300
+            easing.type: Easing.OutBack
+        }
+        
+        NumberAnimation on opacity {
+            from: 0
+            to: 1
+            duration: 200
+        }
+        
+        // Subtle shadow
+        layer.enabled: true
+        layer.effect: ShaderEffect {
+            property color shadowColor: Qt.rgba(0, 0, 0, 0.5)
+        }
 
         MouseArea { anchors.fill: parent; onClicked: {} } // Prevent background click-through
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 25
-            spacing: 15
+            anchors.margins: 30
+            spacing: 20
+
+            // Title
+            Text {
+                text: "Applications"
+                font.pixelSize: 24
+                font.weight: Font.Bold
+                color: Colors.foreground
+                Layout.alignment: Qt.AlignLeft
+            }
 
             SearchBox {
                 id: searchBox
@@ -69,12 +109,22 @@ Window {
                 }
             }
 
+            // Results count
+            Text {
+                visible: filterText.length > 0
+                text: appGrid.model.length + " apps found"
+                font.pixelSize: 12
+                color: Qt.rgba(Colors.foreground.r, Colors.foreground.g, Colors.foreground.b, 0.6)
+                Layout.alignment: Qt.AlignLeft
+            }
+
             GridView {
                 id: appGrid
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                cellWidth: 130
-                cellHeight: 110
+                cellWidth: 140
+                cellHeight: 120
+                clip: true
                 
                 // Filter the model based on the search text
                 model: allApps.filter(function(app) {
@@ -85,6 +135,12 @@ Window {
                     appName: modelData.name
                     appIcon: modelData.icon
                     appCommand: modelData.command
+                }
+                
+                // Smooth scrolling
+                ScrollBar.vertical: ScrollBar {
+                    active: true
+                    policy: ScrollBar.AsNeeded
                 }
             }
         }

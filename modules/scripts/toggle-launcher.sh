@@ -130,8 +130,13 @@ if [[ -n "$OUTPUT" ]]; then
 
     if [[ -n "$COMMAND_TO_RUN" ]]; then
         log_msg "Extracted command: '$COMMAND_TO_RUN'"
-        log_msg "Executing command via hyprctl: '$COMMAND_TO_RUN'"
-        hyprctl dispatch exec "$COMMAND_TO_RUN"
+        
+        # Get the current active workspace to ensure the app opens there
+        CURRENT_WS=$(hyprctl activeworkspace -j | jq -r '.id')
+        log_msg "Current workspace: $CURRENT_WS"
+        
+        log_msg "Executing command via hyprctl: '$COMMAND_TO_RUN' in workspace $CURRENT_WS"
+        hyprctl dispatch exec "[workspace $CURRENT_WS silent]" "$COMMAND_TO_RUN"
     else
         log_msg "Could not extract a command from the launcher output."
     fi
