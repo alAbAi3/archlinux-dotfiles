@@ -4,8 +4,10 @@
 # This script monitors a command file and executes commands written to it by the QML taskbar.
 # This allows the taskbar to trigger actions like opening the launcher or switching workspaces.
 
+# Source the centralized logging script
+source "$HOME/.config/quickshell/lib/logging.sh"
+
 COMMAND_FILE="$HOME/.cache/rice/taskbar_commands.txt"
-LOG_FILE="$HOME/.cache/rice/command-executor.log"
 
 # Ensure cache directory exists
 mkdir -p "$HOME/.cache/rice"
@@ -13,7 +15,7 @@ mkdir -p "$HOME/.cache/rice"
 # Initialize empty command file
 > "$COMMAND_FILE"
 
-echo "[$(date)] Command executor started. Monitoring: $COMMAND_FILE" >> "$LOG_FILE"
+log_msg "Command executor started. Monitoring: $COMMAND_FILE"
 
 # Monitor the file and execute commands
 while true; do
@@ -25,9 +27,9 @@ while true; do
         > "$COMMAND_FILE"
         
         if [[ -n "$command" ]]; then
-            echo "[$(date)] Executing: $command" >> "$LOG_FILE"
+            log_msg "Executing command: $command"
             # Execute the command in the background
-            eval "$command" >> "$LOG_FILE" 2>&1 &
+            eval "$command" >> "$HOME/.cache/rice/rice.log" 2>&1 &
         fi
     fi
     

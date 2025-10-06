@@ -103,14 +103,14 @@ archlinux-dotfiles/
 ### Check Logs
 
 ```bash
-# QuickShell logs
-cat ~/.cache/rice/rice.log
-
-# Command executor logs
-cat ~/.cache/rice/command-executor.log
+# All rice scripts log here (centralized logging)
+tail -f ~/.cache/rice/rice.log
 
 # Hyprland logs
 cat ~/.cache/hyprland/hyprland.log
+
+# Run diagnostic script
+debug-rice.sh
 ```
 
 ### App launcher not working?
