@@ -15,6 +15,17 @@ Rectangle {
 
     property int activeWorkspace: 1
 
+    // --- Command Execution Function ---
+    function executeCommand(cmd) {
+        // Write command to a file that the executor script monitors
+        var xhr = new XMLHttpRequest();
+        var filePath = "file:///home/alibek/.cache/rice/taskbar_commands.txt";
+        
+        xhr.open("PUT", filePath, false);
+        xhr.setRequestHeader("Content-Type", "text/plain");
+        xhr.send(cmd);
+    }
+
     // --- State Loading Function ---
     function loadState() {
         var xhr = new XMLHttpRequest();
@@ -87,7 +98,7 @@ Rectangle {
                     onEntered: parent.color = Qt.rgba(Colors.color4.r, Colors.color4.g, Colors.color4.b, 0.5)
                     onExited: parent.color = Qt.rgba(Colors.color4.r, Colors.color4.g, Colors.color4.b, 0.3)
                     onClicked: {
-                        console.log("sh ~/.local/bin/toggle-launcher.sh")
+                        executeCommand("sh ~/.local/bin/toggle-launcher.sh")
                     }
                 }
             }
@@ -158,7 +169,7 @@ Rectangle {
                         }
                         onClicked: {
                             // The helper script handles the state change
-                            console.log("sh ~/.local/bin/go-to-ws.sh " + (index + 1))
+                            executeCommand("sh ~/.local/bin/go-to-ws.sh " + (index + 1))
                         }
                     }
                 }
@@ -173,6 +184,14 @@ Rectangle {
         RowLayout {
             spacing: 15
             Layout.alignment: Qt.AlignVCenter
+
+            VolumeWidget {
+                textColor: Colors.foreground
+            }
+
+            BatteryWidget {
+                textColor: Colors.foreground
+            }
 
             ClockWidget {
                 color: Colors.foreground

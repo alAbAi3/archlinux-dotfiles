@@ -23,3 +23,5 @@ xdg-desktop-portal
 alsa-utils
 alsa-firmware
 linux-firmware
+python-pywal
+ttf-liberation
