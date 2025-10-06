@@ -1,1 +1,5 @@
-ClockWidget ClockWidget.qml
+module widgets
+ClockWidget 1.0 ClockWidget.qml
+BatteryWidget 1.0 BatteryWidget.qml
+VolumeWidget 1.0 VolumeWidget.qml
+SimpleSystemWidget 1.0 SimpleSystemWidget.qml

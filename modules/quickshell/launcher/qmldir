@@ -1,3 +1,4 @@
 module launcher
-AppDelegate AppDelegate.qml
-SearchBox SearchBox.qml
+AppDelegate 1.0 AppDelegate.qml
+SearchBox 1.0 SearchBox.qml
+AppList 1.0 AppList.qml
