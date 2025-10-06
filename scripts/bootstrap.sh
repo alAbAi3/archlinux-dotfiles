@@ -77,8 +77,8 @@ install_aur_packages() {
     echo "-> Installing packages from AUR..."
 
     if [ -f "$AUR_PACKAGES_FILE" ]; then
-        echo "  - Removing potentially conflicting 'quickshell' package..."
-        sudo pacman -R --noconfirm quickshell >/dev/null 2>&1 || true
+        echo "  - Removing potentially conflicting packages..."
+        sudo pacman -R --noconfirm quickshell python-pywal python-pywal-git >/dev/null 2>&1 || true
         
         # Install packages one by one for better error handling
         while IFS= read -r package; do
@@ -188,8 +188,9 @@ initialize_theme() {
     
     # Check if pywal is installed
     if ! command -v wal &> /dev/null; then
-        echo "  - WARNING: pywal not found. Installing..."
-        sudo pacman -S --noconfirm --needed python-pywal
+        echo "  - WARNING: pywal not found. It should have been installed from AUR."
+        echo "  - Attempting to install python-pywal16-git from AUR..."
+        yay -S --noconfirm python-pywal16-git || echo "  - WARNING: Failed to install pywal. Theme may not work."
     fi
     
     # Ensure theme directory exists

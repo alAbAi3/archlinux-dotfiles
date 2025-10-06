@@ -3,3 +3,4 @@ swww
 ttf-firacode-nerd
 xdg-desktop-portal-hyprland
 sof-firmware-git
+python-pywal16-git
