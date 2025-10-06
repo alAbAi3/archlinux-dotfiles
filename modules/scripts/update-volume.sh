@@ -3,6 +3,12 @@
 # update-volume.sh
 # Updates volume information for the taskbar widget
 
+# Source the centralized logging script (with fallback)
+if [ -f "$HOME/.config/quickshell/lib/logging.sh" ]; then
+    source "$HOME/.config/quickshell/lib/logging.sh"
+    log_msg "Volume monitor started"
+fi
+
 OUTPUT_FILE="/tmp/rice_volume.txt"
 
 while true; do

@@ -4,10 +4,11 @@
 # Quick script to restart all rice components
 #
 
-# Source the centralized logging script
-source "$HOME/.config/quickshell/lib/logging.sh"
-
-log_msg "--- Restart Script Start ---"
+# Source the centralized logging script (with fallback)
+if [ -f "$HOME/.config/quickshell/lib/logging.sh" ]; then
+    source "$HOME/.config/quickshell/lib/logging.sh"
+    log_msg "--- Restart Script Start ---"
+fi
 
 echo "🔄 Restarting rice components..."
 

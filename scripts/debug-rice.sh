@@ -4,10 +4,13 @@
 # Diagnose why taskbar/launcher aren't appearing
 #
 
-# Source the centralized logging script
-source "$HOME/.config/quickshell/lib/logging.sh"
-
-log_msg "--- Debug Script Start ---"
+# Source the centralized logging script (with fallback)
+if [ -f "$HOME/.config/quickshell/lib/logging.sh" ]; then
+    source "$HOME/.config/quickshell/lib/logging.sh"
+    log_msg "--- Debug Script Start ---"
+else
+    echo "WARNING: logging.sh not found, will only display output"
+fi
 
 echo "🔍 RICE DEBUG REPORT"
 echo "===================="

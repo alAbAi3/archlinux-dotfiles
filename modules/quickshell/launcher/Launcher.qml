@@ -3,7 +3,6 @@ import QtQuick.Window 6.0
 import QtQuick.Layouts 6.0
 import QtQuick.Controls 6.0
 import "../theme"
-import "."
 
 Window {
     id: window
@@ -21,7 +20,6 @@ Window {
     // --- Component Initialization ---
     Component.onCompleted: {
         appGrid.model = allApps;
-        searchBox.input.forceActiveFocus(); // Focus the search box on open
     }
 
     // --- Main UI ---
@@ -86,19 +84,67 @@ Window {
                 Layout.alignment: Qt.AlignLeft
             }
 
-            SearchBox {
-                id: searchBox
+            // Search Box
+            Rectangle {
+                id: searchBoxContainer
+                height: 55
                 Layout.fillWidth: true
-                onTextChanged: {
-                    // Update the filter text and the model will update automatically
-                    filterText = text;
-                }
-                onAccepted: {
-                    // If there's a visible item, launch it. Otherwise, do nothing.
-                    if (appGrid.model.length > 0) {
-                        var firstItem = appGrid.model[0];
-                        console.log(firstItem.command);
-                        Qt.quit();
+                color: Qt.rgba(Colors.color0.r, Colors.color0.g, Colors.color0.b, 0.5)
+                radius: 10
+                border.color: searchInput.activeFocus ? Colors.color4 : Qt.rgba(Colors.color5.r, Colors.color5.g, Colors.color5.b, 0.3)
+                border.width: searchInput.activeFocus ? 2 : 1
+
+                Behavior on border.color { ColorAnimation { duration: 200 } }
+                Behavior on border.width { NumberAnimation { duration: 200 } }
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 15
+                    spacing: 10
+
+                    Text {
+                        text: "🔍"
+                        font.pixelSize: 20
+                        color: Colors.foreground
+                    }
+
+                    TextInput {
+                        id: searchInput
+                        Layout.fillWidth: true
+                        font.pixelSize: 16
+                        color: Colors.foreground
+                        selectionColor: Colors.color4
+                        selectedTextColor: Colors.background
+                        clip: true
+
+                        Text {
+                            text: "Search applications..."
+                            font.pixelSize: 16
+                            color: Qt.rgba(Colors.foreground.r, Colors.foreground.g, Colors.foreground.b, 0.5)
+                            visible: !searchInput.text && !searchInput.activeFocus
+                        }
+
+                        Keys.onPressed: function(event) {
+                            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                if (appGrid.model.length > 0) {
+                                    var firstItem = appGrid.model[0];
+                                    console.log(firstItem.command);
+                                    Qt.quit();
+                                }
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_Escape) {
+                                Qt.quit();
+                                event.accepted = true;
+                            }
+                        }
+
+                        onTextChanged: {
+                            filterText = text;
+                        }
+
+                        Component.onCompleted: {
+                            forceActiveFocus();
+                        }
                     }
                 }
             }
@@ -125,10 +171,96 @@ Window {
                     return app.name.toLowerCase().includes(filterText.toLowerCase())
                 })
 
-                delegate: AppDelegate {
-                    appName: modelData.name
-                    appIcon: modelData.icon
-                    appCommand: modelData.command
+                delegate: Item {
+                    width: 120
+                    height: 110
+
+                    property string appName: modelData.name
+                    property string appIcon: modelData.icon
+                    property string appCommand: modelData.command
+
+                    Rectangle {
+                        id: background
+                        anchors.fill: parent
+                        color: mouseArea.containsMouse ? Qt.rgba(Colors.color4.r, Colors.color4.g, Colors.color4.b, 0.2) : "transparent"
+                        radius: 12
+                        border.color: mouseArea.containsMouse ? Colors.color4 : "transparent"
+                        border.width: 1
+                        
+                        scale: mouseArea.pressed ? 0.95 : 1.0
+                        
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on border.color { ColorAnimation { duration: 150 } }
+                        Behavior on scale { 
+                            NumberAnimation { 
+                                duration: 100 
+                                easing.type: Easing.OutCubic
+                            } 
+                        }
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 8
+
+                            Item {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 48
+                                Layout.alignment: Qt.AlignHCenter
+
+                                Rectangle {
+                                    anchors.centerIn: parent
+                                    width: 48
+                                    height: 48
+                                    radius: 10
+                                    color: Qt.rgba(Colors.color0.r, Colors.color0.g, Colors.color0.b, 0.3)
+
+                                    Image {
+                                        anchors.centerIn: parent
+                                        width: 36
+                                        height: 36
+                                        source: appIcon || ""
+                                        fillMode: Image.PreserveAspectFit
+                                        smooth: true
+                                        visible: appIcon !== ""
+                                    }
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: appName ? appName.charAt(0).toUpperCase() : "?"
+                                        font.pixelSize: 24
+                                        font.weight: Font.Bold
+                                        color: Colors.color4
+                                        visible: appIcon === ""
+                                    }
+                                }
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignHCenter
+                                text: appName
+                                font.pixelSize: 11
+                                color: Colors.foreground
+                                horizontalAlignment: Text.AlignHCenter
+                                wrapMode: Text.WordWrap
+                                maximumLineCount: 2
+                                elide: Text.ElideRight
+                            }
+                        }
+
+                        MouseArea {
+                            id: mouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+
+                            onClicked: {
+                                console.log(appCommand);
+                                Qt.quit();
+                            }
+                        }
+                    }
                 }
                 
                 // Smooth scrolling
